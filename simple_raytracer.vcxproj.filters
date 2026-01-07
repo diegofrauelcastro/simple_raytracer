@@ -19,9 +19,15 @@
     <Filter Include="Fichiers sources\Math">
       <UniqueIdentifier>{c091ba88-995f-4aa8-a67d-12b63a0735c6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Fichiers d%27en-tête\Debug">
+      <UniqueIdentifier>{60532b14-b690-425d-8db4-e8f0f4cf4155}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers sources\Debug">
+      <UniqueIdentifier>{32044544-87b4-4955-a688-530c7123ecc8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="code\include\window.h">
+    <ClInclude Include="code\include\window_application.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
     <ClInclude Include="libs\Math\include\matrix2.h">
@@ -48,9 +54,12 @@
     <ClInclude Include="libs\Math\include\vectornd.h">
       <Filter>Fichiers d%27en-tête\Math</Filter>
     </ClInclude>
+    <ClInclude Include="code\include\Debug\debug.h">
+      <Filter>Fichiers d%27en-tête\Debug</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="code\src\window.cpp">
+    <ClCompile Include="code\src\window_application.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
     <ClCompile Include="code\src\main.cpp">
@@ -79,6 +88,9 @@
     </ClCompile>
     <ClCompile Include="libs\Math\src\vectornd.cpp">
       <Filter>Fichiers sources\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="code\src\debug.cpp">
+      <Filter>Fichiers sources\Debug</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -1,34 +1,24 @@
-#include <SDL3/SDL.h>
-#include <iostream>
-#include "vector2.h"
+#include "window_application.h"
+
+#define WIDTH 512
+#define HEIGHT 512
 
 int main(int argc, char* argv[])
 {
-    if (!SDL_Init(SDL_INIT_VIDEO))
-    {
-        printf("SDL could not initialize! SDL_Error: |%s|\n", SDL_GetError());
-        return 1;
-    }
-    Maths::Vector2 vec = Maths::Vector2::zero;
-    std::cout << vec  <<std::endl;
+    // Create application.
+    WindowApplication windowApp;
+    windowApp.InitApplication("Simple Raytracer", WIDTH, HEIGHT);
 
-    SDL_Window* window = SDL_CreateWindow(
-        "SDL3 Test 2 seconds",
-        800, 600,
-        SDL_WINDOW_RESIZABLE
-    );
+    // Test write to screen and present.
+    windowApp.Clear(0, 0, 0);
+    for (int y = 0; y < WIDTH; ++y)
+        for (int x = 0; x < HEIGHT; ++x)
+            windowApp.SetPixel(x, y, x % 256, y % 256, 128);
+    windowApp.Present();
 
-    if (!window)
-    {
-        std::cout << "SDL_CreateWindow Error: " << SDL_GetError() << std::endl;
-        SDL_Quit();
-        return 1;
-    }
-
-    SDL_Delay(2000);
-
-    SDL_DestroyWindow(window);
-    SDL_Quit();
+    // Quit the application after 5s.
+    windowApp.Delay(5000);
+    windowApp.QuitApplication();
 
     return 0;
 }
