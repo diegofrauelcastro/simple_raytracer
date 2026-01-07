@@ -110,11 +110,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)code\include\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)libs\Math\include\;$(SolutionDir)libs\SDL3-3.4.0\include\;$(SolutionDir)code\include\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)libs\SDL3-3.4.0\lib\$(Platform)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -125,19 +127,37 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)code\include\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)libs\Math\include\;$(SolutionDir)libs\SDL3-3.4.0\include\;$(SolutionDir)code\include\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)libs\SDL3-3.4.0\lib\$(Platform)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="code\include\window.h" />
+    <ClInclude Include="libs\Math\include\matrix2.h" />
+    <ClInclude Include="libs\Math\include\matrix3.h" />
+    <ClInclude Include="libs\Math\include\matrix4.h" />
+    <ClInclude Include="libs\Math\include\matrixmxn.h" />
+    <ClInclude Include="libs\Math\include\vector2.h" />
+    <ClInclude Include="libs\Math\include\vector3.h" />
+    <ClInclude Include="libs\Math\include\vector4.h" />
+    <ClInclude Include="libs\Math\include\vectornd.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="code\src\main.cpp" />
     <ClCompile Include="code\src\window.cpp" />
+    <ClCompile Include="libs\Math\src\matrix2.cpp" />
+    <ClCompile Include="libs\Math\src\matrix3.cpp" />
+    <ClCompile Include="libs\Math\src\matrix4.cpp" />
+    <ClCompile Include="libs\Math\src\matrixmxn.cpp" />
+    <ClCompile Include="libs\Math\src\vector2.cpp" />
+    <ClCompile Include="libs\Math\src\vector3.cpp" />
+    <ClCompile Include="libs\Math\src\vector4.cpp" />
+    <ClCompile Include="libs\Math\src\vectornd.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

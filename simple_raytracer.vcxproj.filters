@@ -13,10 +13,40 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Fichiers d%27en-tête\Math">
+      <UniqueIdentifier>{709de432-eaa8-48e3-b9fb-e5e36179ec6a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers sources\Math">
+      <UniqueIdentifier>{c091ba88-995f-4aa8-a67d-12b63a0735c6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\include\window.h">
       <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\Math\include\matrix2.h">
+      <Filter>Fichiers d%27en-tête\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\Math\include\matrix3.h">
+      <Filter>Fichiers d%27en-tête\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\Math\include\matrix4.h">
+      <Filter>Fichiers d%27en-tête\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\Math\include\matrixmxn.h">
+      <Filter>Fichiers d%27en-tête\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\Math\include\vector2.h">
+      <Filter>Fichiers d%27en-tête\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\Math\include\vector3.h">
+      <Filter>Fichiers d%27en-tête\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\Math\include\vector4.h">
+      <Filter>Fichiers d%27en-tête\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\Math\include\vectornd.h">
+      <Filter>Fichiers d%27en-tête\Math</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -25,6 +55,30 @@
     </ClCompile>
     <ClCompile Include="code\src\main.cpp">
       <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\Math\src\matrix2.cpp">
+      <Filter>Fichiers sources\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\Math\src\matrix3.cpp">
+      <Filter>Fichiers sources\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\Math\src\matrix4.cpp">
+      <Filter>Fichiers sources\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\Math\src\matrixmxn.cpp">
+      <Filter>Fichiers sources\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\Math\src\vector2.cpp">
+      <Filter>Fichiers sources\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\Math\src\vector3.cpp">
+      <Filter>Fichiers sources\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\Math\src\vector4.cpp">
+      <Filter>Fichiers sources\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\Math\src\vectornd.cpp">
+      <Filter>Fichiers sources\Math</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
