@@ -15,9 +15,9 @@ int main(int argc, char* argv[])
         for (int x = 0; x < HEIGHT; ++x)
             windowApp.SetPixel(x, y, x % 256, y % 256, 128);
     windowApp.Present();
+    windowApp.Run();
 
-    // Quit the application after 5s.
-    windowApp.Delay(5000);
+    // Quit the application after closure.
     windowApp.QuitApplication();
 
     return 0;

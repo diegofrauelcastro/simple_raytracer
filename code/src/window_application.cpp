@@ -15,7 +15,6 @@ void WindowApplication::InitApplication(const char* _windowName, unsigned int _w
 
     // Create window and renderer and ensure the creation was successful.
     LOG_APP("Creating window, renderer and screen texture...")
-    //window = SDL_CreateWindow(_windowName, _width, _height, 0);
     SDL_CreateWindowAndRenderer(_windowName, _width, _height, SDL_WINDOW_RESIZABLE, &window, &renderer);
     if (!window || !renderer)
     {
@@ -41,6 +40,25 @@ void WindowApplication::InitApplication(const char* _windowName, unsigned int _w
     pixels.resize(_width * _height);
     LOG_CLEAN("")
     LOG_APP("Initialization complete.")
+}
+
+void WindowApplication::Run()
+{
+    LOG_CLEAN("\n\n===== APPLICATION RUN =====\n")
+    LOG_APP("App currently running...")
+
+    SDL_Event event;
+    while (bIsRunning)
+    {
+        while (SDL_PollEvent(&event))
+        {
+            if (event.type == SDL_EVENT_QUIT)
+            {
+                bIsRunning = false;
+                LOG_APP("User requested window close...")
+            }
+        }
+    }
 }
 
 void WindowApplication::SetPixel(unsigned int x, unsigned int y, uint8_t r, uint8_t g, uint8_t b)
@@ -95,7 +113,7 @@ void WindowApplication::QuitApplication()
 
     LOG_CLEAN("\n\n===== TERMINATION =====\n")
 
-    LOG_APP("Destroying assets...")
+    LOG_APP("Closing window and destroying renderer...")
     // Destroy texture, renderer and window.
     if (texture)  SDL_DestroyTexture(texture);
     if (renderer) SDL_DestroyRenderer(renderer);
