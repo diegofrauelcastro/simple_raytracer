@@ -1,4 +1,4 @@
-#include "Debug/debug.h"
+#include "DebugLog/debug.h"
 using namespace Debug;
 
 #include <stdio.h>

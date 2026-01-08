@@ -1,6 +1,6 @@
 #include "window_application.h"
 
-#include "Debug/debug.h"
+#include "DebugLog/debug.h"
 #include <SDL3/SDL.h>
 #include <iostream>
 
