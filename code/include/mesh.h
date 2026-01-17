@@ -7,6 +7,8 @@
 struct Vertex
 {
 	Vertex(Maths::Vector3 _position = Maths::Vector3::zero, Maths::Vector3 _normal = Maths::Vector3::zero, Maths::Vector3 _color = Maths::Vector3(1.f, 1.f, 1.f));
+	Vertex(const Vertex& _copy);
+	~Vertex() = default;
 	Maths::Vector3 position;
 	Maths::Vector3 normal;
 	Maths::Vector3 color;;
@@ -17,6 +19,7 @@ class Mesh
 public:
 	Mesh(std::string _name, std::string _filePath);
 	Mesh();
+	Mesh(const Mesh& _copy);
 	~Mesh();
 
 

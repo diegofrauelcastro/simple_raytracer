@@ -11,6 +11,13 @@ Vertex::Vertex(Vector3 _position, Vector3 _normal, Vector3 _color)
 {
 }
 
+Vertex::Vertex(const Vertex& _copy)
+	: position(_copy.position)
+	, normal(_copy.normal)
+	, color(_copy.color)
+{
+}
+
 void Mesh::CreateTriangleMesh()
 {
 	// Hardcoded vertices and indices.
@@ -154,11 +161,20 @@ Mesh::Mesh(std::string _name, std::string _filePath)
 }
 
 Mesh::Mesh()
-	: name("Triangle")
+	: name("TriangleMesh")
 {
 	// Create a triangle by default.
 	CreateTriangleMesh();
 	LOG_APP("Successfully loaded a triangle.");
+}
+
+Mesh::Mesh(const Mesh& _copy)
+	: name(_copy.name + " (Copy)")
+	, vertexCount(_copy.vertexCount)
+	, indexCount(_copy.indexCount)
+	, vertices(_copy.vertices)
+	, indices(_copy.indices)
+{
 }
 
 Mesh::~Mesh()
