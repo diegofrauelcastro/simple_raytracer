@@ -16,8 +16,8 @@ Camera::Camera(Maths::Vector3 _position, Maths::Vector3 _direction, float _focal
 
 void Camera::RenderFrame(WindowApplication& _dstWindow)
 {
-	unsigned int w = _dstWindow.GetWidth();
-	unsigned int h = _dstWindow.GetHeight();
+	uint32_t w = _dstWindow.GetWidth();
+	uint32_t h = _dstWindow.GetHeight();
 	if (h == 0)
 	{
 		LOG_APP("/!\\ Warning : Tried to draw on a window which height is null. Skipping...")
@@ -51,7 +51,7 @@ void Camera::RenderFrame(WindowApplication& _dstWindow)
 void Camera::ComputeViewportData(WindowApplication& _dstWindow)
 {
 	LOG_CLEAN("")
-	LOG_APP("Obsolete viewport data ! Recalculating...")
+	LOG_APP("Obsolete viewport data! Recalculating...")
 
 	// Record window's aspect ratio.
 	aspectRatio = _dstWindow.GetAspectRatio();

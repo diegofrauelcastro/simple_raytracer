@@ -5,7 +5,7 @@
 #include <SDL3/SDL.h>
 #include <iostream>
 
-void WindowApplication::InitApplication(const char* _windowName, unsigned int _width, unsigned int _height)
+void WindowApplication::InitApplication(const char* _windowName, uint32_t _width, uint32_t _height)
 {
     LOG_CLEAN("\n\n===== INITIALIZATION =====\n")
 
@@ -62,7 +62,7 @@ void WindowApplication::WaitUntilWindowClose()
     }
 }
 
-void WindowApplication::SetPixel(unsigned int x, unsigned int y, uint8_t r, uint8_t g, uint8_t b)
+void WindowApplication::SetPixel(uint32_t x, uint32_t y, uint8_t r, uint8_t g, uint8_t b)
 {
     // Ensure the requested pixel exists within the bounds of the buffer.
     if (x >= width || y >= height)
@@ -78,7 +78,7 @@ void WindowApplication::SetPixel(unsigned int x, unsigned int y, uint8_t r, uint
     pixels[y * width + x] = color;
 }
 
-void WindowApplication::SetPixel(unsigned int x, unsigned int y, Maths::Vector3& _rgb)
+void WindowApplication::SetPixel(uint32_t x, uint32_t y, Maths::Vector3& _rgb)
 {
     SetPixel(x, y, (uint8_t)_rgb.x, (uint8_t)_rgb.y, (uint8_t)_rgb.z);
 }
@@ -137,6 +137,7 @@ void WindowApplication::QuitApplication()
 
     LOG_CLEAN("")
     LOG_APP("Termination complete.\n")
+    LOG_CLEAN("=======================\n\n")
 
     // Log destruction.
     Debug::Log::GetInstance()->Destroy();
