@@ -1,28 +1,56 @@
 #pragma once
 
 #include "vector3.h"
+#include <vector>
+
+// Forward declarations.
+class Entity;
+struct Vertex;
+
+struct HitData
+{
+	Maths::Vector3 hitPoint;
+	Maths::Vector3 baryCoords;
+	const Vertex* triangle[3] = {nullptr, nullptr, nullptr};
+
+	HitData() = default;
+	HitData(const HitData& _copy);
+	~HitData() = default;
+	HitData& operator=(const HitData& _copy);
+};
 
 class Ray
 {
 private:
+	/// RAY PROPERTIES ///
+
 	Maths::Vector3 origin;
 	Maths::Vector3 direction;
 
+	
+	/// CLASS HELPERS ///
+
+	static bool DoesRayIntersectWithScene(const Ray& _ray, const std::vector<Entity*>& _entities, HitData* _storedHitData);
+	static bool IsPointInTriangle(const Maths::Vector3& _point, const Maths::Vector3& _triA, const Maths::Vector3& _triB, const Maths::Vector3& _triC, Maths::Vector3* _storedBaryCoords);
+	static bool DoesRayIntersectWithInfiniteTriPlane(const Ray& _ray, const Maths::Vector3& _triA, const Maths::Vector3& _triB, const Maths::Vector3& _triC, Maths::Vector3* _storedIntersectionPoint);
+	static Vertex CreateInterpolatedVertexFromHitData(const HitData& _hitData);
+
 public:
+	/// CONSTRUCTOR & DESTRUCTOR ///
+
 	Ray(Maths::Vector3 _origin = Maths::Vector3::zero, Maths::Vector3 _direction = Maths::Vector3::forward);
+	Ray(const Ray& _copy);
 	~Ray() = default;
 
 
 	/// METHODS ///
 
 	Maths::Vector3 GetPointInRay(float _t) const;
-	bool IsPointInTriangle(const Maths::Vector3& _point, const Maths::Vector3& _triA, const Maths::Vector3& _triB, const Maths::Vector3& _triC, Maths::Vector3& _storedBaryCoords) const;
-	bool DoesRayIntersectWithInfiniteTriPlane(const Maths::Vector3& _triA, const Maths::Vector3& _triB, const Maths::Vector3& _triC, Maths::Vector3& _storedIntersectionPoint) const;
-	static Maths::Vector3 LaunchRay(Ray& _ray);
+	static Maths::Vector3 LaunchRay(const Ray& _ray, const std::vector<Entity*>& _entities);
 
 
 	/// GETTERS ///
 
-	Maths::Vector3 GetOrigin()const { return origin; }
-	Maths::Vector3 GetDirection()const { return direction; }
+	const Maths::Vector3& GetOrigin() const { return origin; }
+	const Maths::Vector3& GetDirection() const { return direction; }
 };

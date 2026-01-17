@@ -2,6 +2,7 @@
 #include "DebugLog/debug.h"
 #include "window_application.h"
 #include "ray.h"
+#include "scene.h"
 
 using namespace Maths;
 
@@ -14,7 +15,22 @@ Camera::Camera(Maths::Vector3 _position, Maths::Vector3 _direction, float _focal
 {
 }
 
-void Camera::RenderFrame(WindowApplication& _dstWindow)
+Camera::Camera(const Camera& _copy)
+	: position(_copy.position)
+	, direction(_copy.direction)
+	, focalLength(_copy.focalLength)
+
+	, firstPixelLocation(_copy.firstPixelLocation)
+	, uPixelDelta(_copy.uPixelDelta)
+	, vPixelDelta(_copy.vPixelDelta)
+	, verticalFOV(_copy.verticalFOV)
+	, aspectRatio(_copy.aspectRatio)
+	, viewportWidth(_copy.viewportWidth)
+	, viewportHeight(_copy.viewportHeight)
+{
+}
+
+void Camera::RenderFrame(WindowApplication& _dstWindow, const Scene& _scene)
 {
 	uint32_t w = _dstWindow.GetWidth();
 	uint32_t h = _dstWindow.GetHeight();
@@ -28,24 +44,30 @@ void Camera::RenderFrame(WindowApplication& _dstWindow)
 	if (aspectRatio < 0.00001f || fabs(aspectRatio - _dstWindow.GetAspectRatio()) > 0.00001f)
 		ComputeViewportData(_dstWindow);
 
+	if (_dstWindow.GetDebugTelemetry())
+		LOG_APP("TELEMETRY: Start launching rays.")
+
 	// Render to window screen.
 	_dstWindow.Clear(0, 0, 0);
-	for (unsigned int y = 0; y < h; ++y)
+	for (uint32_t y = 0; y < h; ++y)
 	{
-		for (unsigned int x = 0; x < w; ++x)
+		for (uint32_t x = 0; x < w; ++x)
 		{
 			// Get current pixel's position and direction.
-			Vector3 pixelCenter = firstPixelLocation + x * uPixelDelta + y * vPixelDelta;
+			Vector3 pixelCenter = firstPixelLocation + (float)x * uPixelDelta + (float)y * vPixelDelta;
 			Vector3 rayDirection = (pixelCenter - position).Normalize();
 
 			// Create a ray for this pixel.
 			Ray ray(position, rayDirection);
 
 			// Launch the ray and determine its color.
-			Vector3 pixelColor = Ray::LaunchRay(ray);
+			Vector3 pixelColor = Ray::LaunchRay(ray, _scene.GetEntities());
 			_dstWindow.SetPixel(x, y, pixelColor);
 		}
 	}
+
+	if (_dstWindow.GetDebugTelemetry())
+		LOG_APP("TELEMETRY: Stop launching rays.")
 }
 
 void Camera::ComputeViewportData(WindowApplication& _dstWindow)

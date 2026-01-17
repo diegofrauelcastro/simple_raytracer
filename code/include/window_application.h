@@ -11,12 +11,14 @@ namespace Maths { class Vector3; }
 class WindowApplication
 {
 public:
+	/// CONSTRUCTOR & DESTRUCTOR ///
+
 	WindowApplication() = default;
 	~WindowApplication() = default;
 
 	/// PUBLIC METHODS ///
 
-	void InitApplication(const char* _windowName, uint32_t _width, uint32_t _height);
+	void InitApplication(const char* _windowName, uint32_t _width, uint32_t _height, bool _bShowDebugTelemetry = false);
 	void WaitUntilWindowClose();
 	void QuitApplication();
 	void SetPixel(uint32_t x, uint32_t y, uint8_t r, uint8_t g, uint8_t b);
@@ -32,6 +34,7 @@ public:
 	uint32_t GetWidth() const { return width; }
 	uint32_t GetHeight() const { return height; }
 	float GetAspectRatio() const { return (float)width/(float)height; }
+	bool GetDebugTelemetry() const { return bShowDebugFrametimeTelemetry; }
 
 private:
 	SDL_Window* window = nullptr;				// SDL Window handle.
@@ -44,4 +47,5 @@ private:
 	uint32_t height = 0;						// Window height.
 	bool bHasBeenInitialized = false;			// Flag to remember application state.
 	bool bIsRunning = true;
+	bool bShowDebugFrametimeTelemetry = false;
 };

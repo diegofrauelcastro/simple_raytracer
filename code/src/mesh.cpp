@@ -22,14 +22,14 @@ void Mesh::CreateTriangleMesh()
 {
 	// Hardcoded vertices and indices.
 	indices = { 0, 1, 2 };
-	Vertex v1({ -0.5f, -0.5f, 0.f }, Vector3::forward);
-	Vertex v2({ 0.5f, -0.5f, 0.f }, Vector3::forward);
-	Vertex v3({ 0.f, 0.5f, 0.f }, Vector3::forward);
+	Vertex v1({ -0.5f, -0.5f, 0.f }, Vector3::forward, Vector3(255, 0, 0));
+	Vertex v2({ 0.5f, -0.5f, 0.f }, Vector3::forward, Vector3(0, 255, 0));
+	Vertex v3({ 0.f, 0.5f, 0.f }, Vector3::forward, Vector3(0, 0, 255));
 	vertices = { v1, v2, v3 };
 	vertexCount = 3; indexCount = 3;
 }
 
-// Author: Merwan ASSEMAT
+// Author: Merwann ASSEMAT
 bool Mesh::Load(std::string _filePath)
 {
 	// Open obj file and read line by line.
@@ -84,8 +84,8 @@ bool Mesh::Load(std::string _filePath)
 			}
 		}
 		// Update counters.
-		indexCount = indices.size();
-		vertexCount = vertices.size();
+		indexCount = (uint32_t)indices.size();
+		vertexCount = (uint32_t)vertices.size();
 		// Close file and clear vectors.
 		objFile.close();
 		positions.clear(); positions.shrink_to_fit();
@@ -98,7 +98,7 @@ bool Mesh::Load(std::string _filePath)
 	return false;
 }
 
-// Author: Merwan ASSEMAT
+// Author: Merwann ASSEMAT
 void Mesh::AddVertex(const std::string& _face, const std::vector<Vector3>& _positions, const std::vector<Vector3>& _normals, std::map<std::string, int>& _mapIds)
 {
 	if (_mapIds.find(_face) == _mapIds.end())
@@ -140,7 +140,7 @@ void Mesh::AddVertex(const std::string& _face, const std::vector<Vector3>& _posi
 
 		Vertex newVertex(_positions[posId], _normals[normalId]);
 		vertices.push_back(newVertex);
-		int id = vertices.size() - 1;
+		int id = (int)vertices.size() - 1;
 		indices.push_back(id);
 		_mapIds[_face] = id;
 	}
@@ -153,8 +153,8 @@ Mesh::Mesh(std::string _name, std::string _filePath)
 	: name(_name)
 {
 	// Try to load the mesh file (.obj) at the specified path.
-	bool loaded = Load(_filePath);
-	if (!loaded)
+	bool bHasLoaded = Load(_filePath);
+	if (!bHasLoaded)
 		LOG_APP("Couldn't load mesh %s", name)
 	else
 		LOG_APP("Successfully loaded mesh %s", name);
@@ -182,5 +182,4 @@ Mesh::~Mesh()
 	// Clear vertices and indices.
 	indices.clear(); indices.shrink_to_fit();
 	vertices.clear(); vertices.shrink_to_fit();
-	LOG_APP("Successfully destroyed mesh %s", name);
 }

@@ -5,7 +5,7 @@
 #include <SDL3/SDL.h>
 #include <iostream>
 
-void WindowApplication::InitApplication(const char* _windowName, uint32_t _width, uint32_t _height)
+void WindowApplication::InitApplication(const char* _windowName, uint32_t _width, uint32_t _height, bool _bShowDebugTelemetry)
 {
     LOG_CLEAN("\n\n===== INITIALIZATION =====\n")
 
@@ -35,6 +35,7 @@ void WindowApplication::InitApplication(const char* _windowName, uint32_t _width
     // Mark this application as initialized.
     name = _windowName;
     bHasBeenInitialized = true;
+    bShowDebugFrametimeTelemetry = _bShowDebugTelemetry;
     width = _width;
     height = _height;
     // Resize pixel buffer.
@@ -97,12 +98,18 @@ void WindowApplication::Present()
     if (!window || !texture || !renderer)
         LOG_THROW("/!\\ Cannot present! Missing window, texture or renderer.")
 
+    if (bShowDebugFrametimeTelemetry)
+        LOG_APP("TELEMETRY: Start presenting.")
+
     // Update texture with the pixel buffer.
     SDL_UpdateTexture(texture, nullptr, pixels.data(), width * sizeof(uint32_t));
     // Render the texture.
     SDL_RenderClear(renderer);
     SDL_RenderTexture(renderer, texture, nullptr, nullptr);
     SDL_RenderPresent(renderer);
+
+    if (bShowDebugFrametimeTelemetry)
+        LOG_APP("TELEMETRY: Stop presenting.")
 }
 
 void WindowApplication::Delay(uint32_t _ms)
