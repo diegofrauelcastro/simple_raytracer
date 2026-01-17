@@ -1,6 +1,7 @@
 #include "window_application.h"
 
 #include "DebugLog/debug.h"
+#include "vector3.h"
 #include <SDL3/SDL.h>
 #include <iostream>
 
@@ -42,7 +43,7 @@ void WindowApplication::InitApplication(const char* _windowName, unsigned int _w
     LOG_APP("Initialization complete.")
 }
 
-void WindowApplication::Run()
+void WindowApplication::WaitUntilWindowClose()
 {
     LOG_CLEAN("\n\n===== APPLICATION RUN =====\n")
     LOG_APP("App currently running...")
@@ -75,6 +76,11 @@ void WindowApplication::SetPixel(unsigned int x, unsigned int y, uint8_t r, uint
 
     // Set the color.
     pixels[y * width + x] = color;
+}
+
+void WindowApplication::SetPixel(unsigned int x, unsigned int y, Maths::Vector3& _rgb)
+{
+    SetPixel(x, y, (uint8_t)_rgb.x, (uint8_t)_rgb.y, (uint8_t)_rgb.z);
 }
 
 void WindowApplication::Clear(uint8_t r, uint8_t g, uint8_t b)

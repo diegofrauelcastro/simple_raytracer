@@ -163,7 +163,10 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="code\include\camera.h" />
+    <ClInclude Include="code\include\DebugLog\debug.h" />
     <ClInclude Include="code\include\Debug\debug.h" />
+    <ClInclude Include="code\include\ray.h" />
     <ClInclude Include="code\include\window_application.h" />
     <ClInclude Include="libs\Math\include\matrix2.h" />
     <ClInclude Include="libs\Math\include\matrix3.h" />
@@ -175,8 +178,10 @@
     <ClInclude Include="libs\Math\include\vectornd.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="code\src\camera.cpp" />
     <ClCompile Include="code\src\debug.cpp" />
     <ClCompile Include="code\src\main.cpp" />
+    <ClCompile Include="code\src\ray.cpp" />
     <ClCompile Include="code\src\window_application.cpp" />
     <ClCompile Include="libs\Math\src\matrix2.cpp" />
     <ClCompile Include="libs\Math\src\matrix3.cpp" />

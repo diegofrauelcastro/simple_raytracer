@@ -57,6 +57,15 @@
     <ClInclude Include="code\include\Debug\debug.h">
       <Filter>Fichiers d%27en-tête\Debug</Filter>
     </ClInclude>
+    <ClInclude Include="code\include\ray.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="code\include\DebugLog\debug.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="code\include\camera.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="code\src\window_application.cpp">
@@ -91,6 +100,12 @@
     </ClCompile>
     <ClCompile Include="code\src\debug.cpp">
       <Filter>Fichiers sources\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="code\src\ray.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="code\src\camera.cpp">
+      <Filter>Fichiers sources</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

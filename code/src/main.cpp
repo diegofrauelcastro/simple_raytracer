@@ -1,6 +1,7 @@
 #include "window_application.h"
+#include "camera.h"
 
-#define WIDTH 512
+#define WIDTH 1024
 #define HEIGHT 512
 
 int main(int argc, char* argv[])
@@ -9,13 +10,13 @@ int main(int argc, char* argv[])
     WindowApplication windowApp;
     windowApp.InitApplication("Simple Raytracer", WIDTH, HEIGHT);
 
-    // Test write to screen and present.
-    windowApp.Clear(0, 0, 0);
-    for (int y = 0; y < WIDTH; ++y)
-        for (int x = 0; x < HEIGHT; ++x)
-            windowApp.SetPixel(x, y, x % 256, y % 256, 128);
+    // Create a camera and render an image with it.
+    Camera mainCam;
+    mainCam.RenderFrame(windowApp);
+
+    // Present the image and wait for user to close the window.
     windowApp.Present();
-    windowApp.Run();
+    windowApp.WaitUntilWindowClose();
 
     // Quit the application after closure.
     windowApp.QuitApplication();
