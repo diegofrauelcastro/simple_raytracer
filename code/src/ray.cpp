@@ -34,22 +34,27 @@ bool Ray::DoesRayIntersectWithScene(const Ray& _ray, const std::vector<Entity*>&
     {
         Vector3 offset = _entities[i]->transform.position;
         const Mesh* currMesh = _entities[i]->GetMesh();
-        uint32_t triCount = currMesh->GetIndexCount() / 3;
+
         // Iterate through all the triangles of the current entity's mesh.
-        for (uint32_t j = 0; j < triCount; j++)
+        for (uint32_t j = 0; j < currMesh->GetIndexCount(); j+=3)
         {
             // Ensure we have a valid triangle.
             size_t vertexCount = currMesh->GetVertexCount();
-            if (j >= vertexCount || j + 1 >= vertexCount || j + 2 >= vertexCount)
+            uint32_t i1 = currMesh->GetIndices()[j];
+            uint32_t i2 = currMesh->GetIndices()[j+1];
+            uint32_t i3 = currMesh->GetIndices()[j+2];
+
+            if (i1 >= vertexCount || i2 >= vertexCount || i3 >= vertexCount)
             {
                 LOG_APP("/!\\ Tried to access a triangle with vertices out of bounds. Skipping...")
                 continue;
             }
 
             // Get the 3 vertices of the triangle.
-            h.triangle[0] = &currMesh->GetVertices()[j];
-            h.triangle[1] = &currMesh->GetVertices()[j + 1];
-            h.triangle[2] = &currMesh->GetVertices()[j + 2];
+            h.triangle[0] = &currMesh->GetVertices()[i1];
+            h.triangle[1] = &currMesh->GetVertices()[i2];
+            h.triangle[2] = &currMesh->GetVertices()[i3];
+            // Apply transform to the triangle.
             Vector3 positions[3] = { h.triangle[0]->position + offset, h.triangle[1]->position + offset, h.triangle[2]->position + offset };
 
             // Check collision with the infinite plane formed by this triangle.

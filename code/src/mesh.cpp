@@ -122,7 +122,7 @@ void Mesh::AddVertex(const std::string& _face, const std::vector<Vector3>& _posi
 
 		if (subStrings.size() != 3)
 		{
-			LOG_APP("Invalid face format: %s", _face.c_str());
+			LOG_APP("Invalid face format: \"%s\"", _face.c_str());
 			return;
 		}
 
@@ -133,7 +133,7 @@ void Mesh::AddVertex(const std::string& _face, const std::vector<Vector3>& _posi
 
 		if (posId < 0 || posId >= _positions.size() || normalId < 0 || normalId >= _normals.size())
 		{
-			LOG_APP("Invalid index in face: %s", _face.c_str());
+			LOG_APP("Invalid index in face: \"%s\"", _face.c_str());
 			return;
 		}
 
@@ -155,9 +155,9 @@ Mesh::Mesh(std::string _name, std::string _filePath)
 	// Try to load the mesh file (.obj) at the specified path.
 	bool bHasLoaded = Load(_filePath);
 	if (!bHasLoaded)
-		LOG_APP("Couldn't load mesh %s", name)
+		LOG_APP("Couldn't load mesh \"%s\"", name.c_str())
 	else
-		LOG_APP("Successfully loaded mesh %s", name);
+		LOG_APP("Successfully loaded mesh \"%s\"", name.c_str());
 }
 
 Mesh::Mesh()

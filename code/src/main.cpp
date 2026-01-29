@@ -3,8 +3,8 @@
 #include "camera.h"
 #include "scene.h"
 
-#define WIDTH 256
-#define HEIGHT 128
+#define WIDTH 1600
+#define HEIGHT 900
 
 int main(int argc, char* argv[])
 {
@@ -16,7 +16,9 @@ int main(int argc, char* argv[])
     Mesh triMesh;
     Entity triangle1("Triangle1", &triMesh, Maths::Vector3(0.f, 0.f, -5.f));
     Entity triangle2("Triangle2", &triMesh, Maths::Vector3(-1.f, 0.f, -7.5f));
-    Scene scene({ &triangle1, &triangle2 });
+    Mesh groundMesh("GroundMesh", "Assets/Meshes/Ground/GroundCube.obj");
+    Entity ground("Ground", &groundMesh, Maths::Vector3(0.f, -1.f, -5.f));
+    Scene scene({ &ground, &triangle1, &triangle2 });
 
     // Create a camera and render an image with it.
     Camera mainCam;

@@ -30,6 +30,19 @@ Camera::Camera(const Camera& _copy)
 {
 }
 
+void PrintProgress(float progress) {
+	const int barWidth = 50;
+
+	std::cout << "\r[";
+	int pos = barWidth * progress;
+	for (int i = 0; i < barWidth; ++i) {
+		if (i < pos) std::cout << "#";
+		else std::cout << " ";
+	}
+	std::cout << "] " << int(progress * 100.0f) << "%";
+	std::cout.flush();
+}
+
 void Camera::RenderFrame(WindowApplication& _dstWindow, const Scene& _scene)
 {
 	uint32_t w = _dstWindow.GetWidth();
@@ -47,6 +60,9 @@ void Camera::RenderFrame(WindowApplication& _dstWindow, const Scene& _scene)
 	if (_dstWindow.GetDebugTelemetry())
 		LOG_APP("TELEMETRY: Start launching rays.")
 
+	int pixelCounter = 0;
+	float totalPixels = w * h;
+
 	// Render to window screen.
 	_dstWindow.Clear(0, 0, 0);
 	for (uint32_t y = 0; y < h; ++y)
@@ -63,8 +79,11 @@ void Camera::RenderFrame(WindowApplication& _dstWindow, const Scene& _scene)
 			// Launch the ray and determine its color.
 			Vector3 pixelColor = Ray::LaunchRay(ray, _scene.GetEntities());
 			_dstWindow.SetPixel(x, y, pixelColor);
+			pixelCounter++;
 		}
+		PrintProgress(pixelCounter / totalPixels);
 	}
+	LOG_CLEAN("");
 
 	if (_dstWindow.GetDebugTelemetry())
 		LOG_APP("TELEMETRY: Stop launching rays.")
