@@ -1,12 +1,14 @@
 #include "ray.h"
 #include "scene.h"
+#include "mesh_renderer_component.h"
+#include "mesh.h"
 
 #include <DebugLog/debug.h>
 
 using namespace Maths;
 
 
-Ray::Ray(Vector3 _origin, Vector3 _direction)
+Ray::Ray(const Vector3& _origin, const Vector3& _direction)
 	: origin(_origin),
 	direction(_direction)
 {
@@ -23,7 +25,7 @@ Vector3 Ray::GetPointInRay(float _t) const
     return origin + (_t * direction);
 }
 
-bool Ray::DoesRayIntersectWithScene(const Ray& _ray, const std::vector<Entity*>& _entities, HitData* _hitData)
+bool Ray::DoesRayIntersectWithScene(const Ray& _ray, const std::vector<MeshRendererComponent*>& _entities, HitData* _hitData)
 {
     HitData h;
     float minDistanceHit = INFINITY;
@@ -32,17 +34,17 @@ bool Ray::DoesRayIntersectWithScene(const Ray& _ray, const std::vector<Entity*>&
     // Iterate through all entities.
     for (size_t i = 0; i < _entities.size(); i++)
     {
-        Vector3 offset = _entities[i]->transform.position;
-        const Mesh* currMesh = _entities[i]->GetMesh();
+        Vector3 offset = _entities[i]->GetTransform().GetPosition();
+        const Mesh& currMesh = _entities[i]->GetMesh();
 
         // Iterate through all the triangles of the current entity's mesh.
-        for (uint32_t j = 0; j < currMesh->GetIndexCount(); j+=3)
+        for (uint32_t j = 0; j < currMesh.GetIndexCount(); j+=3)
         {
             // Ensure we have a valid triangle.
-            size_t vertexCount = currMesh->GetVertexCount();
-            uint32_t i1 = currMesh->GetIndices()[j];
-            uint32_t i2 = currMesh->GetIndices()[j+1];
-            uint32_t i3 = currMesh->GetIndices()[j+2];
+            size_t vertexCount = currMesh.GetVertexCount();
+            uint32_t i1 = currMesh.GetIndices()[j];
+            uint32_t i2 = currMesh.GetIndices()[j+1];
+            uint32_t i3 = currMesh.GetIndices()[j+2];
 
             if (i1 >= vertexCount || i2 >= vertexCount || i3 >= vertexCount)
             {
@@ -51,9 +53,9 @@ bool Ray::DoesRayIntersectWithScene(const Ray& _ray, const std::vector<Entity*>&
             }
 
             // Get the 3 vertices of the triangle.
-            h.triangle[0] = &currMesh->GetVertices()[i1];
-            h.triangle[1] = &currMesh->GetVertices()[i2];
-            h.triangle[2] = &currMesh->GetVertices()[i3];
+            h.triangle[0] = &currMesh.GetVertices()[i1];
+            h.triangle[1] = &currMesh.GetVertices()[i2];
+            h.triangle[2] = &currMesh.GetVertices()[i3];
             // Apply transform to the triangle.
             Vector3 positions[3] = { h.triangle[0]->position + offset, h.triangle[1]->position + offset, h.triangle[2]->position + offset };
 
@@ -77,11 +79,11 @@ bool Ray::DoesRayIntersectWithScene(const Ray& _ray, const std::vector<Entity*>&
     return bHasFoundValidHit;
 }
 
-Vector3 Ray::LaunchRay(const Ray& _ray, const std::vector<Entity*>& _entities)
+Vector3 Ray::LaunchRay(const Ray& _ray, const Scene& _sceneToRender)
 {
     // Check for collision with any element (entity) in the scene.
     HitData hit;
-    if (DoesRayIntersectWithScene(_ray, _entities, &hit))
+    if (DoesRayIntersectWithScene(_ray, _sceneToRender.GetMeshRenderersFrameCache(), &hit))
     {
         // Calculate color using the hit point data.
         Vertex newVertex = CreateInterpolatedVertexFromHitData(hit);

@@ -19,7 +19,7 @@ public:
 
 	/// CONSTRUCTOR & DESTRUCTOR ///
 
-	Camera(Maths::Vector3 _position = Maths::Vector3::zero, Maths::Vector3 _direction = Maths::Vector3::forward, float _focalLength = 1.0f);
+	Camera(const Maths::Vector3& _position = Maths::Vector3::zero, const Maths::Vector3& _direction = Maths::Vector3::forward, float _focalLength = 1.0f);
 	Camera(const Camera& _copy);
 	~Camera() = default;
 

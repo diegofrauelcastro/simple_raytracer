@@ -326,9 +326,10 @@ Matrix4 Matrix4::Identity()
 Matrix4 Matrix4::CreateTransformMatrix(const Vector3& rotation, const Vector3& position, const Vector3& scale)
 {
 	Matrix4 mTranslate = CreateTranslationMatrix(position);
-	Matrix4 mRotationY = CreateYRotationMatrix(rotation.y * (PI/180.f));
-	Matrix4 mRotationX = CreateXRotationMatrix(rotation.x * (PI / 180.f));
-	Matrix4 mRotationZ = CreateZRotationMatrix(rotation.z * (PI / 180.f));
+	float degToRad = PI / 180.f;
+	Matrix4 mRotationY = CreateYRotationMatrix(rotation.y * degToRad);
+	Matrix4 mRotationX = CreateXRotationMatrix(rotation.x * degToRad);
+	Matrix4 mRotationZ = CreateZRotationMatrix(rotation.z * degToRad);
 	Matrix4 mScale = CreateScaleMatrix(scale);
 	return mTranslate * mRotationY * mRotationX * mRotationZ * mScale;
 }

@@ -2,6 +2,7 @@
 using namespace Maths;
 
 const Vector3 Vector3::zero = Vector3();
+const Vector3 Vector3::one = Vector3(1.f, 1.f, 1.f);
 const Vector3 Vector3::right = Vector3(1.f, 0.f, 0.f);
 const Vector3 Vector3::left = Vector3(-1.f, 0.f, 0.f);
 const Vector3 Vector3::up = Vector3(0.f, 1.f, 0.f);
@@ -347,6 +348,21 @@ float Vector3::AngleBetweenTwoVector3(const Vector3& v1, const Vector3& v2)
 	float dotProduct = v1.DotProduct(v2);
 	float angle = acosf(dotProduct / productNorms);
 	return isnan(angle) ? 0 : angle;
+}
+
+Vector3 Maths::Vector3::GenerateRandomUnitVector3()
+{
+	// Generate a random point on the surface of a sphere using spherical coordinates.
+	//
+	// Z
+	float z = 2.f * static_cast<float>(rand()) / RAND_MAX - 1.f;
+	// Angles
+	float theta = 2.f * static_cast<float>(rand()) / RAND_MAX * 3.14159265f;
+	float phi = sqrtf(1.f - z * z);
+	// X and Y
+	float x = phi * cosf(theta); // x coordinate
+	float y = phi * sinf(theta); // y coordinate
+	return Vector3(x, y, z);
 }
 
 std::ostream& Maths::operator<<(std::ostream& os, const Vector3& v)

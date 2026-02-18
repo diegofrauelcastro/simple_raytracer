@@ -19,6 +19,7 @@ namespace Maths
 
 		// Static members
 		const static Vector3 zero;
+		const static Vector3 one;
 		const static Vector3 right;
 		const static Vector3 left;
 		const static Vector3 up;
@@ -92,6 +93,7 @@ namespace Maths
 		static Vector3 MidPoint(const Vector3& p1, const Vector3& p2);
 		static float Distance(const Vector3& p1, const Vector3& p2);
 		static float AngleBetweenTwoVector3(const Vector3& v1, const Vector3& v2);
+		static Vector3 GenerateRandomUnitVector3();
 	};
 
 	std::ostream& operator<<(std::ostream& os, const Vector3& v);

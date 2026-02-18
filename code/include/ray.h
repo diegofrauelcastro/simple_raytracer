@@ -4,7 +4,8 @@
 #include <vector>
 
 // Forward declarations.
-class Entity;
+class Scene;
+class MeshRendererComponent;
 struct Vertex;
 
 struct HitData
@@ -30,7 +31,7 @@ private:
 	
 	/// CLASS HELPERS ///
 
-	static bool DoesRayIntersectWithScene(const Ray& _ray, const std::vector<Entity*>& _entities, HitData* _storedHitData);
+	static bool DoesRayIntersectWithScene(const Ray& _ray, const std::vector<MeshRendererComponent*>& _entities, HitData* _storedHitData);
 	static bool IsPointInTriangle(const Maths::Vector3& _point, const Maths::Vector3& _triA, const Maths::Vector3& _triB, const Maths::Vector3& _triC, Maths::Vector3* _storedBaryCoords);
 	static bool DoesRayIntersectWithInfiniteTriPlane(const Ray& _ray, const Maths::Vector3& _triA, const Maths::Vector3& _triB, const Maths::Vector3& _triC, Maths::Vector3* _storedIntersectionPoint);
 	static Vertex CreateInterpolatedVertexFromHitData(const HitData& _hitData);
@@ -38,7 +39,7 @@ private:
 public:
 	/// CONSTRUCTOR & DESTRUCTOR ///
 
-	Ray(Maths::Vector3 _origin = Maths::Vector3::zero, Maths::Vector3 _direction = Maths::Vector3::forward);
+	Ray(const Maths::Vector3& _origin = Maths::Vector3::zero, const Maths::Vector3& _direction = Maths::Vector3::forward);
 	Ray(const Ray& _copy);
 	~Ray() = default;
 
@@ -46,7 +47,7 @@ public:
 	/// METHODS ///
 
 	Maths::Vector3 GetPointInRay(float _t) const;
-	static Maths::Vector3 LaunchRay(const Ray& _ray, const std::vector<Entity*>& _entities);
+	static Maths::Vector3 LaunchRay(const Ray& _ray, const Scene& _sceneToRender);
 
 
 	/// GETTERS ///

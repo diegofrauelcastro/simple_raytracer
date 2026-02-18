@@ -18,6 +18,7 @@ namespace Maths
 
 		// Static members
 		const static Vector2 zero;
+		const static Vector2 one;
 		const static Vector2 up;
 		const static Vector2 down;
 		const static Vector2 left;

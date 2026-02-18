@@ -8,7 +8,7 @@ using namespace Maths;
 
 #define DEG2RAD 0.01745329252f
 
-Camera::Camera(Maths::Vector3 _position, Maths::Vector3 _direction, float _focalLength)
+Camera::Camera(const Vector3& _position, const Vector3& _direction, float _focalLength)
 	: position(_position)
 	, direction(_direction)
 	, focalLength(_focalLength)
@@ -77,7 +77,7 @@ void Camera::RenderFrame(WindowApplication& _dstWindow, const Scene& _scene)
 			Ray ray(position, rayDirection);
 
 			// Launch the ray and determine its color.
-			Vector3 pixelColor = Ray::LaunchRay(ray, _scene.GetEntities());
+			Vector3 pixelColor = Ray::LaunchRay(ray, _scene);
 			_dstWindow.SetPixel(x, y, pixelColor);
 			pixelCounter++;
 		}
