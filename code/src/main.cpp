@@ -32,6 +32,7 @@ int main(int argc, char* argv[])
 	Entity& ground = scene.GetRoot().AddChild("Ground");
 	ground.AddComponent<MeshRendererComponent>("MeshRenderer")->SetMesh(groundMesh);
 	ground.GetTransform().SetPosition(Maths::Vector3(0.f, -1.f, -5.f));
+	ground.GetTransform().SetRotation(0.f, 0.f, 20.f);
 
 	// Icosphere
 	Mesh icosphereMesh("IcosphereMesh", "Assets/Meshes/icosphere.obj");

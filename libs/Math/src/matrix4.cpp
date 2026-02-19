@@ -107,7 +107,7 @@ Matrix4 Matrix4::Transpose() const
 	Matrix4 res = Matrix4();
 	for (int i = 0; i < 4; i++)
 	{
-		for (int j = 0; j < 4; i++)
+		for (int j = 0; j < 4; j++)
 		{
 			res[4*i + j] = m[4*j + i];
 		}

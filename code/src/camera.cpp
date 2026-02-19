@@ -47,9 +47,9 @@ void Camera::RenderFrame(WindowApplication& _dstWindow, const Scene& _scene)
 {
 	uint32_t w = _dstWindow.GetWidth();
 	uint32_t h = _dstWindow.GetHeight();
-	if (h == 0)
+	if (w == 0 || h == 0)
 	{
-		LOG_APP("/!\\ Warning : Tried to draw on a window which height is null. Skipping...")
+		LOG_APP("/!\\ Warning : Tried to draw on a window which width or height is null. Skipping...")
 		return;
 	}
 

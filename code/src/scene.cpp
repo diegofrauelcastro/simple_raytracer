@@ -114,7 +114,7 @@ void Scene::UpdateTransformsFromEntity(Entity& _currentObject, const Matrix4& _p
 
 	// Update each child entity.
 	for (std::unique_ptr<Entity>& child : _currentObject.children)
-		UpdateTransformsFromEntity(*child.get(), _currentObject.transform.GetWorldSpaceMatrix());
+		UpdateTransformsFromEntity(*child.get(), _currentObject.transform.GetObjectToWorldMatrix());
 }
 
 void Scene::ReloadSceneScriptsFromEntity(Entity& _currentObject)

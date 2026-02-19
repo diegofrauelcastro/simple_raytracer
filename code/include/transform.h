@@ -35,13 +35,15 @@ public:
 
 	// GETTERS
 
-	const Maths::Vector3& GetPosition()	const			{ return position; }
-	const Maths::Vector3& GetRotation()		const		{ return rotation; }
-	const Maths::Vector3& GetScale()	const			{ return scale; }
-	const Maths::Matrix4& GetWorldSpaceMatrix() const	{ return worldSpaceMatrix; }
-	const Maths::Vector3& GetForward()					{ if (shouldUpdateForwardUpRight) UpdateForwardUpRight(); return forward; }
-	const Maths::Vector3& GetUp()						{ if (shouldUpdateForwardUpRight) UpdateForwardUpRight(); return up; }
-	const Maths::Vector3& GetRight()					{ if (shouldUpdateForwardUpRight) UpdateForwardUpRight(); return right; }
+	const Maths::Vector3& GetPosition()				const	{ return position; }
+	const Maths::Vector3& GetRotation()				const	{ return rotation; }
+	const Maths::Vector3& GetScale()				const	{ return scale; }
+	const Maths::Matrix4& GetObjectToWorldMatrix()	const	{ return objectToWorldSpaceMatrix; }
+	const Maths::Matrix4& GetWorldToObjectMatrix()	const	{ return worldSpaceToObjectMatrix; }
+	const Maths::Matrix4& GetNormalMatrix()			const	{ return worldSpaceToObjectMatrix.Transpose(); }
+	const Maths::Vector3& GetForward()						{ if (shouldUpdateForwardUpRight) UpdateForwardUpRight(); return forward; }
+	const Maths::Vector3& GetUp()							{ if (shouldUpdateForwardUpRight) UpdateForwardUpRight(); return up; }
+	const Maths::Vector3& GetRight()						{ if (shouldUpdateForwardUpRight) UpdateForwardUpRight(); return right; }
 
 private:
 	// TRANSFORM PROPERTIES
@@ -54,7 +56,8 @@ private:
 	Maths::Vector3 up		= Maths::Vector3(0.f, 1.f, 0.f);
 	Maths::Vector3 right	= Maths::Vector3(1.f, 0.f, 0.f);
 
-	Maths::Matrix4 worldSpaceMatrix = Maths::Matrix4::Identity();
+	Maths::Matrix4 objectToWorldSpaceMatrix = Maths::Matrix4::Identity();
+	Maths::Matrix4 worldSpaceToObjectMatrix = Maths::Matrix4::Identity();
 	bool shouldUpdateWorldMatrix	= true;
 	bool shouldUpdateForwardUpRight = true;
 

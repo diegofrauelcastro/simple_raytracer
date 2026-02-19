@@ -29,54 +29,45 @@ bool Ray::DoesRayIntersectWithScene(const Ray& _ray, const std::vector<MeshRende
 {
     HitData h;
     float minDistanceHit = INFINITY;
-    bool bHasFoundValidHit = false;
+    bool hasFoundValidHit = false;
 
     // Iterate through all entities.
     for (size_t i = 0; i < _entities.size(); i++)
     {
-        Vector3 offset = _entities[i]->GetTransform().GetPosition();
+		// Get the mesh and transform the ray into the entity's local space.
         const Mesh& currMesh = _entities[i]->GetMesh();
+		Matrix4 w2oMat = _entities[i]->GetTransform().GetWorldToObjectMatrix();
+		Ray rayInEntitySpace = Ray(
+            w2oMat * Vector4(_ray.origin, 1.f),
+            (w2oMat * Vector4(_ray.direction, 0.f)).Normalize()
+        );
 
-        // Iterate through all the triangles of the current entity's mesh.
-        for (uint32_t j = 0; j < currMesh.GetIndexCount(); j+=3)
-        {
-            // Ensure we have a valid triangle.
-            size_t vertexCount = currMesh.GetVertexCount();
-            uint32_t i1 = currMesh.GetIndices()[j];
-            uint32_t i2 = currMesh.GetIndices()[j+1];
-            uint32_t i3 = currMesh.GetIndices()[j+2];
+		// Check if the ray intersects with the current entity's mesh (in local space). If it does, the hit data is stored in the reference passed as a parameter, also in local space.
+		if (DoesRayIntersectWithMeshInLocalSpace(rayInEntitySpace, currMesh, &h))
+		{
+			// If the point is closer than our last recorded point, store it in the reference passed.
+			if (h.distanceFromRayOrigin < minDistanceHit)
+			{
+                // Record the new hit point.
+				minDistanceHit = h.distanceFromRayOrigin;
+				*_hitData = h;
+				hasFoundValidHit = true;
 
-            if (i1 >= vertexCount || i2 >= vertexCount || i3 >= vertexCount)
-            {
-                LOG_APP("/!\\ Tried to access a triangle with vertices out of bounds. Skipping...")
-                continue;
-            }
+				// Transform the hit point back to world space.
+				_hitData->hitPoint = _entities[i]->GetTransform().GetObjectToWorldMatrix() * Vector4(_hitData->hitPoint, 1.f);
 
-            // Get the 3 vertices of the triangle.
-            h.triangle[0] = &currMesh.GetVertices()[i1];
-            h.triangle[1] = &currMesh.GetVertices()[i2];
-            h.triangle[2] = &currMesh.GetVertices()[i3];
-            // Apply transform to the triangle.
-            Vector3 positions[3] = { h.triangle[0]->position + offset, h.triangle[1]->position + offset, h.triangle[2]->position + offset };
-
-            // Check collision with the infinite plane formed by this triangle.
-            if (DoesRayIntersectWithInfiniteTriPlane(_ray, positions[0], positions[1], positions[2], &h.hitPoint))
-            {
-                float newDistance = (_ray.origin - h.hitPoint).Norm();
-                if (newDistance > minDistanceHit)
-                    continue;
-                // If the point is closer than our last recorded point, check if it is inside the desired triangle.
-                if (IsPointInTriangle(h.hitPoint, positions[0], positions[1], positions[2], &h.baryCoords))
-                {
-                    minDistanceHit = newDistance;
-                    *_hitData = h;
-                    bHasFoundValidHit = true;
-                }
-            }
-        }
+				// Transform the triangle vertices back to world space.
+                for (int j = 0; j < 3; j++)
+                    _hitData->triangle[j] = new Vertex(
+                        _entities[i]->GetTransform().GetObjectToWorldMatrix() * Vector4(_hitData->triangle[j]->position, 1.f),
+                        _entities[i]->GetTransform().GetNormalMatrix() * Vector4(_hitData->triangle[j]->normal, 0.f),
+						_hitData->triangle[j]->color
+                    );
+			}
+		}
     }
 
-    return bHasFoundValidHit;
+    return hasFoundValidHit;
 }
 
 Vector3 Ray::LaunchRay(const Ray& _ray, const Scene& _sceneToRender)
@@ -149,6 +140,51 @@ bool Ray::DoesRayIntersectWithInfiniteTriPlane(const Ray& _ray, const Vector3& _
     return true;
 }
 
+bool Ray::DoesRayIntersectWithMeshInLocalSpace(const Ray& _ray, const Mesh& _mesh, HitData* _h)
+{
+    if (!_h)
+        return false;
+
+	bool hasFoundValidHit = false;
+
+    // Iterate through all the triangles of the current entity's mesh.
+    for (uint32_t j = 0; j < _mesh.GetIndexCount(); j += 3)
+    {
+        // Ensure we have a valid triangle.
+        size_t vertexCount = _mesh.GetVertexCount();
+        uint32_t i1 = _mesh.GetIndices()[j];
+        uint32_t i2 = _mesh.GetIndices()[j + 1];
+        uint32_t i3 = _mesh.GetIndices()[j + 2];
+
+        if (i1 >= vertexCount || i2 >= vertexCount || i3 >= vertexCount)
+        {
+            LOG_APP("/!\\ Tried to access a triangle with vertices out of bounds. Skipping...")
+            continue;
+        }
+
+        // Get the 3 vertices of the triangle.
+        _h->triangle[0] = &_mesh.GetVertices()[i1];
+        _h->triangle[1] = &_mesh.GetVertices()[i2];
+        _h->triangle[2] = &_mesh.GetVertices()[i3];
+        Vector3 positions[3] = { _h->triangle[0]->position, _h->triangle[1]->position, _h->triangle[2]->position };
+
+        // Check collision with the infinite plane formed by this triangle.
+        if (DoesRayIntersectWithInfiniteTriPlane(_ray, positions[0], positions[1], positions[2], &_h->hitPoint))
+        {
+            float newDistance = (_ray.origin - _h->hitPoint).Norm();
+			if (newDistance > _h->distanceFromRayOrigin)
+                continue;
+            // If the point is closer than our last recorded point, check if it is inside the desired triangle.
+            if (IsPointInTriangle(_h->hitPoint, positions[0], positions[1], positions[2], &_h->baryCoords))
+            {
+				hasFoundValidHit = true;
+                _h->distanceFromRayOrigin = newDistance;
+            }
+        }
+    }
+	return hasFoundValidHit;
+}
+
 Vertex Ray::CreateInterpolatedVertexFromHitData(const HitData& _hitData)
 {
     Vertex newVertex;
@@ -173,6 +209,7 @@ Vertex Ray::CreateInterpolatedVertexFromHitData(const HitData& _hitData)
 HitData::HitData(const HitData& _copy)
     : hitPoint(_copy.hitPoint)
     , baryCoords(_copy.baryCoords)
+	, distanceFromRayOrigin(_copy.distanceFromRayOrigin)
 {
     triangle[0] = _copy.triangle[0];
     triangle[1] = _copy.triangle[1];
@@ -186,5 +223,6 @@ HitData& HitData::operator=(const HitData& _copy)
     triangle[2] = _copy.triangle[2];
     hitPoint = _copy.hitPoint;
     baryCoords = _copy.baryCoords;
+	distanceFromRayOrigin = _copy.distanceFromRayOrigin;
     return *this;
 }

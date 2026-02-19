@@ -6,6 +6,7 @@
 // Forward declarations.
 class Scene;
 class MeshRendererComponent;
+class Mesh;
 struct Vertex;
 
 struct HitData
@@ -13,6 +14,7 @@ struct HitData
 	Maths::Vector3 hitPoint;
 	Maths::Vector3 baryCoords;
 	const Vertex* triangle[3] = {nullptr, nullptr, nullptr};
+	float distanceFromRayOrigin = INFINITY;
 
 	HitData() = default;
 	HitData(const HitData& _copy);
@@ -34,6 +36,7 @@ private:
 	static bool DoesRayIntersectWithScene(const Ray& _ray, const std::vector<MeshRendererComponent*>& _entities, HitData* _storedHitData);
 	static bool IsPointInTriangle(const Maths::Vector3& _point, const Maths::Vector3& _triA, const Maths::Vector3& _triB, const Maths::Vector3& _triC, Maths::Vector3* _storedBaryCoords);
 	static bool DoesRayIntersectWithInfiniteTriPlane(const Ray& _ray, const Maths::Vector3& _triA, const Maths::Vector3& _triB, const Maths::Vector3& _triC, Maths::Vector3* _storedIntersectionPoint);
+	static bool DoesRayIntersectWithMeshInLocalSpace(const Ray& _ray, const Mesh& _mesh, HitData* _storedHitData);
 	static Vertex CreateInterpolatedVertexFromHitData(const HitData& _hitData);
 
 public:

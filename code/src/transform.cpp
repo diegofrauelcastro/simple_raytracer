@@ -37,7 +37,7 @@ Transform::Transform(const Transform& _copy)
 	, forward(_copy.forward)
 	, up(_copy.up)
 	, right(_copy.right)
-	, worldSpaceMatrix(_copy.worldSpaceMatrix)
+	, objectToWorldSpaceMatrix(_copy.objectToWorldSpaceMatrix)
 	, shouldUpdateWorldMatrix(_copy.shouldUpdateWorldMatrix)
 	, shouldUpdateForwardUpRight(_copy.shouldUpdateForwardUpRight)
 {
@@ -51,7 +51,7 @@ Transform& Transform::operator=(const Transform& _copy)
 	forward		= _copy.forward;
 	up			= _copy.up;
 	right		= _copy.right;
-	worldSpaceMatrix			= _copy.worldSpaceMatrix;
+	objectToWorldSpaceMatrix			= _copy.objectToWorldSpaceMatrix;
 	shouldUpdateWorldMatrix		= _copy.shouldUpdateWorldMatrix;
 	shouldUpdateForwardUpRight	= _copy.shouldUpdateForwardUpRight;
 	return *this;
@@ -59,15 +59,16 @@ Transform& Transform::operator=(const Transform& _copy)
 
 Matrix4 Transform::GetLocalSpaceMatrix() const
 {
-	return Matrix4::CreateTransformMatrix(position, rotation, scale);
+	return Matrix4::CreateTransformMatrix(rotation, position, scale);
 }
 
 void Transform::UpdateWorldTransform(const Matrix4& _parentWorldSpaceMat)
 {
 	if (shouldUpdateWorldMatrix)
 	{
-		worldSpaceMatrix = _parentWorldSpaceMat * GetLocalSpaceMatrix();
-		shouldUpdateWorldMatrix = false;
+		objectToWorldSpaceMatrix = GetLocalSpaceMatrix() * _parentWorldSpaceMat;
+		worldSpaceToObjectMatrix = objectToWorldSpaceMatrix.GetInverse();
+		shouldUpdateWorldMatrix	 = false;
 	}
 }
 
