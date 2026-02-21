@@ -1,12 +1,14 @@
 #pragma once
 
 #include "vector3.h"
+#include "color.h"
 #include <vector>
 
 // Forward declarations.
 class Scene;
 class MeshRendererComponent;
 class Mesh;
+class Material;
 struct Vertex;
 
 struct HitData
@@ -15,6 +17,7 @@ struct HitData
 	Maths::Vector3 baryCoords;
 	const Vertex* triangle[3] = {nullptr, nullptr, nullptr};
 	float distanceFromRayOrigin = INFINITY;
+	Material* material = nullptr;
 
 	HitData() = default;
 	HitData(const HitData& _copy);
@@ -38,6 +41,7 @@ private:
 	static bool DoesRayIntersectWithInfiniteTriPlane(const Ray& _ray, const Maths::Vector3& _triA, const Maths::Vector3& _triB, const Maths::Vector3& _triC, Maths::Vector3* _storedIntersectionPoint);
 	static bool DoesRayIntersectWithMeshInLocalSpace(const Ray& _ray, const Mesh& _mesh, HitData* _storedHitData);
 	static Vertex CreateInterpolatedVertexFromHitData(const HitData& _hitData);
+	static Color LaunchRayRecursively(const Ray& _ray, const Scene& _sceneToRender, int _currentRecursionDepth, int _maxRecursionDepth);
 
 public:
 	/// CONSTRUCTOR & DESTRUCTOR ///
@@ -50,7 +54,7 @@ public:
 	/// METHODS ///
 
 	Maths::Vector3 GetPointInRay(float _t) const;
-	static Maths::Vector3 LaunchRay(const Ray& _ray, const Scene& _sceneToRender);
+	static Color LaunchRay(const Ray& _ray, const Scene& _sceneToRender, int _maxRecursionDepth = (int)INFINITY);
 
 
 	/// GETTERS ///

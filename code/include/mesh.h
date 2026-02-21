@@ -1,17 +1,18 @@
 #pragma once
 
 #include "vector3.h"
+#include "color.h"
 #include <vector>
 #include <map>
 
 struct Vertex
 {
-	Vertex(Maths::Vector3 _position = Maths::Vector3::zero, Maths::Vector3 _normal = Maths::Vector3::zero, Maths::Vector3 _color = Maths::Vector3(1.f, 1.f, 1.f));
+	Vertex(const Maths::Vector3& _position = Maths::Vector3::zero, const Maths::Vector3& _normal = Maths::Vector3::zero, const Color& _color = Color::white);
 	Vertex(const Vertex& _copy);
 	~Vertex() = default;
-	Maths::Vector3 position;
-	Maths::Vector3 normal;
-	Maths::Vector3 color;;
+	Maths::Vector3	position;
+	Maths::Vector3	normal;
+	Color			color;
 };
 
 class Mesh

@@ -79,7 +79,7 @@ void WindowApplication::SetPixel(uint32_t x, uint32_t y, uint8_t r, uint8_t g, u
     pixels[y * width + x] = color;
 }
 
-void WindowApplication::SetPixel(uint32_t x, uint32_t y, Maths::Vector3& _rgb)
+void WindowApplication::SetPixel(uint32_t x, uint32_t y, const Maths::Vector3& _rgb)
 {
     SetPixel(x, y, (uint8_t)_rgb.x, (uint8_t)_rgb.y, (uint8_t)_rgb.z);
 }

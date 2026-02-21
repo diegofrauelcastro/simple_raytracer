@@ -22,7 +22,7 @@ public:
 	void WaitUntilWindowClose();
 	void QuitApplication();
 	void SetPixel(uint32_t x, uint32_t y, uint8_t r, uint8_t g, uint8_t b);
-	void SetPixel(uint32_t x, uint32_t y, Maths::Vector3& _rgb);
+	void SetPixel(uint32_t x, uint32_t y, const Maths::Vector3& _rgb);
 	void Clear(uint8_t r, uint8_t g, uint8_t b);
 	void Present();
 	void Delay(uint32_t _ms);

@@ -4,7 +4,7 @@
 
 using namespace Maths;
 
-Vertex::Vertex(Vector3 _position, Vector3 _normal, Vector3 _color)
+Vertex::Vertex(const Vector3& _position, const Vector3& _normal, const Color& _color)
 	: position(_position)
 	, normal(_normal)
 	, color(_color)
@@ -22,9 +22,9 @@ void Mesh::CreateTriangleMesh()
 {
 	// Hardcoded vertices and indices.
 	indices = { 0, 1, 2 };
-	Vertex v1({ -0.5f, -0.5f, 0.f }, Vector3::forward, Vector3(255, 0, 0));
-	Vertex v2({ 0.5f, -0.5f, 0.f }, Vector3::forward, Vector3(0, 255, 0));
-	Vertex v3({ 0.f, 0.5f, 0.f }, Vector3::forward, Vector3(0, 0, 255));
+	Vertex v1({ -0.5f, -0.5f, 0.f }, Vector3::forward, Color(1.f, 0.f, 0.f));
+	Vertex v2({ 0.5f, -0.5f, 0.f }, Vector3::forward, Color(0.f, 1.f, 0.f));
+	Vertex v3({ 0.f, 0.5f, 0.f }, Vector3::forward, Color(0.f, 0.f, 1.f));
 	vertices = { v1, v2, v3 };
 	vertexCount = 3; indexCount = 3;
 }

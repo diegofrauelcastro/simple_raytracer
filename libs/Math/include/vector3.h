@@ -94,6 +94,7 @@ namespace Maths
 		static float Distance(const Vector3& p1, const Vector3& p2);
 		static float AngleBetweenTwoVector3(const Vector3& v1, const Vector3& v2);
 		static Vector3 GenerateRandomUnitVector3();
+		static Vector3 GenerateRandomOnHemisphere(const Vector3& _normal);
 	};
 
 	std::ostream& operator<<(std::ostream& os, const Vector3& v);

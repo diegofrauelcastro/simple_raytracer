@@ -34,7 +34,7 @@ void PrintProgress(float progress) {
 	const int barWidth = 50;
 
 	std::cout << "\r[";
-	int pos = barWidth * progress;
+	int pos = (int)(barWidth * progress);
 	for (int i = 0; i < barWidth; ++i) {
 		if (i < pos) std::cout << "#";
 		else std::cout << " ";
@@ -61,7 +61,7 @@ void Camera::RenderFrame(WindowApplication& _dstWindow, const Scene& _scene)
 		LOG_APP("TELEMETRY: Start launching rays.")
 
 	int pixelCounter = 0;
-	float totalPixels = w * h;
+	float totalPixels = (float)(w * h);
 
 	// Render to window screen.
 	_dstWindow.Clear(0, 0, 0);
@@ -69,6 +69,8 @@ void Camera::RenderFrame(WindowApplication& _dstWindow, const Scene& _scene)
 	{
 		for (uint32_t x = 0; x < w; ++x)
 		{
+			// TODO Optimization : Multithread this by enqueing chunks to a thread pool.
+
 			// Get current pixel's position and direction.
 			Vector3 pixelCenter = firstPixelLocation + (float)x * uPixelDelta + (float)y * vPixelDelta;
 			Vector3 rayDirection = (pixelCenter - position).Normalize();
@@ -77,8 +79,8 @@ void Camera::RenderFrame(WindowApplication& _dstWindow, const Scene& _scene)
 			Ray ray(position, rayDirection);
 
 			// Launch the ray and determine its color.
-			Vector3 pixelColor = Ray::LaunchRay(ray, _scene);
-			_dstWindow.SetPixel(x, y, pixelColor);
+			Color pixelColor = Ray::LaunchRay(ray, _scene, 1000);
+			_dstWindow.SetPixel(x, y, pixelColor.ToByteVector3());
 			pixelCounter++;
 		}
 		PrintProgress(pixelCounter / totalPixels);

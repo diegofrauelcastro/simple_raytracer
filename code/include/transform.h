@@ -40,7 +40,7 @@ public:
 	const Maths::Vector3& GetScale()				const	{ return scale; }
 	const Maths::Matrix4& GetObjectToWorldMatrix()	const	{ return objectToWorldSpaceMatrix; }
 	const Maths::Matrix4& GetWorldToObjectMatrix()	const	{ return worldSpaceToObjectMatrix; }
-	const Maths::Matrix4& GetNormalMatrix()			const	{ return worldSpaceToObjectMatrix.Transpose(); }
+	const Maths::Matrix4  GetNormalMatrix()			const	{ return worldSpaceToObjectMatrix.Transpose(); }
 	const Maths::Vector3& GetForward()						{ if (shouldUpdateForwardUpRight) UpdateForwardUpRight(); return forward; }
 	const Maths::Vector3& GetUp()							{ if (shouldUpdateForwardUpRight) UpdateForwardUpRight(); return up; }
 	const Maths::Vector3& GetRight()						{ if (shouldUpdateForwardUpRight) UpdateForwardUpRight(); return right; }

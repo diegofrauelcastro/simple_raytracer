@@ -365,6 +365,13 @@ Vector3 Maths::Vector3::GenerateRandomUnitVector3()
 	return Vector3(x, y, z);
 }
 
+Vector3 Maths::Vector3::GenerateRandomOnHemisphere(const Vector3& _normal)
+{
+	Vector3 res = GenerateRandomUnitVector3();
+	if (res.DotProduct(_normal) > 0.0f) return res;
+	else return -res;
+}
+
 std::ostream& Maths::operator<<(std::ostream& os, const Vector3& v)
 {
 	return os << v.X() << " ; " << v.Y() << " ; " << v.Z();

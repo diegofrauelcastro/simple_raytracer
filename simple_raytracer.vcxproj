@@ -165,6 +165,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="code\include\color.h" />
     <ClInclude Include="code\include\component.h" />
     <ClInclude Include="code\include\camera.h" />
     <ClInclude Include="code\include\DebugLog\debug.h" />
@@ -188,6 +189,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="code\src\camera.cpp" />
+    <ClCompile Include="code\src\color.cpp" />
     <ClCompile Include="code\src\component.cpp" />
     <ClCompile Include="code\src\debug.cpp" />
     <ClCompile Include="code\src\entity.cpp" />
