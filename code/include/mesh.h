@@ -15,6 +15,12 @@ struct Vertex
 	Color			color;
 };
 
+struct AABB
+{
+	Maths::Vector3 min;
+	Maths::Vector3 max;
+};
+
 class Mesh
 {
 public:
@@ -31,18 +37,21 @@ public:
 	const std::string GetName() const { return name; }
 	const std::vector<uint32_t>& GetIndices() const { return indices; };
 	const Vertex* GetVertices() const { return vertices.data(); }
+	const AABB& GetBoundingBox() const { return boundingBox; }
 private:
 	/// MESH PROPERTIES ///
 
 	std::vector<uint32_t> indices;
 	std::vector<Vertex> vertices;
 	std::string name;
+	AABB boundingBox;
 	uint32_t vertexCount;
 	uint32_t indexCount;
 
 
 	/// CLASS HELPERS /// 
 
+	void UpdateBoundingBox();
 	void CreateTriangleMesh();
 	// Author: Merwan ASSEMAT
 	bool Load(std::string _filePath);

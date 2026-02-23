@@ -10,6 +10,7 @@ class MeshRendererComponent;
 class Mesh;
 class Material;
 struct Vertex;
+struct AABB;
 
 struct HitData
 {
@@ -42,6 +43,7 @@ private:
 	static bool DoesRayIntersectWithMeshInLocalSpace(const Ray& _ray, const Mesh& _mesh, HitData* _storedHitData);
 	static Vertex CreateInterpolatedVertexFromHitData(const HitData& _hitData);
 	static Color LaunchRayRecursively(const Ray& _ray, const Scene& _sceneToRender, int _currentRecursionDepth, int _maxRecursionDepth);
+	static bool DoesRayIntersectWithAABB(const Ray& _ray, const AABB& _aabb);
 
 public:
 	/// CONSTRUCTOR & DESTRUCTOR ///

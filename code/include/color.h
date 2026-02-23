@@ -25,6 +25,7 @@ public:
 	Color();
 	Color(float _r = 0.f, float _g = 0.f, float _b = 0.f, float _a = 1.f);
 	Color(float _f, float _a);
+	Color(const Maths::Vector3& _v, float _a = 1.f);
 	Color(const Color& _copy);
 
 
@@ -49,4 +50,5 @@ public:
 	bool operator==(const Color& _c) const;
 	bool operator!=(const Color& _c) const;
 	Maths::Vector3 ToByteVector3() const { return Maths::Vector3(fmin(255.f, fmax(0.f, r * 255.f)), fmin(255.f, fmax(0.f, g * 255.f)), fmin(255.f, fmax(0.f, b * 255.f))); }
+	Maths::Vector3 ToFloatVector3() const { return Maths::Vector3(fmin(1.f, fmax(0.f, r)), fmin(1.f, fmax(0.f, g)), fmin(1.f, fmax(0.f, b))); }
 };

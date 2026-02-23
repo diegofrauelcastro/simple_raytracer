@@ -2,6 +2,7 @@
 #include "scene.h"
 #include "mesh_renderer_component.h"
 #include "mesh.h"
+#include "material.h"
 
 #include <DebugLog/debug.h>
 
@@ -31,7 +32,7 @@ bool Ray::DoesRayIntersectWithScene(const Ray& _ray, const std::vector<MeshRende
     float minDistanceHit = INFINITY;
     bool hasFoundValidHit = false;
 
-    // Iterate through all entities.
+    // Iterate through all entities with a mesh renderer component.
     for (size_t i = 0; i < _entities.size(); i++)
     {
 		// Get the mesh and transform the ray into the entity's local space.
@@ -41,6 +42,10 @@ bool Ray::DoesRayIntersectWithScene(const Ray& _ray, const std::vector<MeshRende
             w2oMat * Vector4(_ray.origin, 1.f),
             (w2oMat * Vector4(_ray.direction, 0.f)).Normalize()
         );
+
+        // First check if ray intersects with AABB to discard unnecessary mesh tests.
+        if (!DoesRayIntersectWithAABB(rayInEntitySpace, currMesh.GetBoundingBox()))
+			continue;
 
 		// Check if the ray intersects with the current entity's mesh (in local space). If it does, the hit data is stored in the reference passed as a parameter, also in local space.
 		if (DoesRayIntersectWithMeshInLocalSpace(rayInEntitySpace, currMesh, &h))
@@ -74,34 +79,93 @@ bool Ray::DoesRayIntersectWithScene(const Ray& _ray, const std::vector<MeshRende
 Color Ray::LaunchRayRecursively(const Ray& _ray, const Scene& _sceneToRender, int _currentRecursionDepth, int _maxRecursionDepth)
 {
     if (_currentRecursionDepth >= _maxRecursionDepth)
-        return Color::white;
+        return Color::black;
 
     // Check for collision with any element (entity) in the scene.
 	HitData hit;
     if (DoesRayIntersectWithScene(_ray, _sceneToRender.GetMeshRenderersFrameCache(), &hit))
     {
+        if (hit.material == nullptr)
+			return Color::black;
+
         // Calculate color using the hit point data.
         Vertex newVertex = CreateInterpolatedVertexFromHitData(hit);
-		//Color matColor = hit.material->GetColor();
-		Color matColor = Color::white;
+		Color matColor = hit.material->albedo;
+        Color albedo = newVertex.color * matColor;
 
-		//// Get the color from the ray bounced from the hit point.
-		Vector3 newOrigin = newVertex.position + 0.001f * newVertex.normal; // Slight offset to avoid self-intersection.
-		Vector3 newDirection = Vector3::GenerateRandomOnHemisphere(newVertex.normal);
-		Color recursiveColor = LaunchRayRecursively(Ray(newOrigin, newDirection), _sceneToRender, _currentRecursionDepth + 1, _maxRecursionDepth);
+        // Next ray values.
+		Color recursiveColor = Color::black;
+        newVertex.normal.Normalize();
+        Vector3 newOrigin = newVertex.position + 0.001f * newVertex.normal; // Slight offset to avoid self-intersection.
+        switch (hit.material->GetType())
+		{
+            // For diffuse materials, we will simply bounce the ray in a random direction on the hemisphere of the hit point normal.
+            case MaterialType::DIFFUSE:
+            {
+                // Get the color from the ray bounced from the hit point.
+                Vector3 newDirection = Vector3::GenerateRandomOnHemisphere(newVertex.normal);
+                float cosTheta = fmax(newDirection.DotProduct(newVertex.normal), 0.0f);
+                recursiveColor = LaunchRayRecursively(Ray(newOrigin, newDirection), _sceneToRender, _currentRecursionDepth + 1, _maxRecursionDepth) * cosTheta * 2.f;
+                break;
+            }
+            // For metallic materials, we will reflect the ray on the hit point normal.
+            case MaterialType::METALLIC:
+            {
+                const Vector3 incident = _ray.direction.Normalize();
+                Vector3 reflectedDir = incident - 2.f * incident.DotProduct(newVertex.normal) * newVertex.normal;
+
+                // Avoid reflecting below surface
+                if (reflectedDir.DotProduct(newVertex.normal) <= 0)
+                    recursiveColor = Color::black;
+                recursiveColor = LaunchRayRecursively(Ray(newOrigin, reflectedDir), _sceneToRender, _currentRecursionDepth + 1, _maxRecursionDepth);
+                break;
+            }
+        }
 
         // Final color.
-		Color finalColor = (newVertex.color * matColor) * (recursiveColor * 0.5f);
+		Color finalColor = albedo * recursiveColor;
         return finalColor;
     }
     // If no collision at all, show the sky color (gradient).
     else
     {
         float a = 0.5f * (_ray.GetDirection().y + 1.0f);
-        //Vector3 color01 = (1.0f - a) * Vector3(1.0f, 1.0f, 1.0f) + a * Vector3(0.5f, 0.7f, 1.0f);
 		Color color01 =  (Color::white * (1.0f - a)) + (Color(0.5f, 0.7f, 1.0f) * a);
-        return color01 * (float)255;
+        return color01;
 	}
+}
+
+bool Ray::DoesRayIntersectWithAABB(const Ray& _ray, const AABB& _aabb)
+{
+	Maths::Vector3 boxMin = _aabb.min;
+	Maths::Vector3 boxMax = _aabb.max;
+
+	// Using the "slab method" for ray-AABB intersection.
+    float tMin = 0.f;
+    float tMax = INFINITY;
+    for (int i = 0; i < 3; i++)
+    {
+        if (fabs(_ray.direction[i]) < 0.00001f)
+        {
+			// Parallel to slab. No hit if origin not within slab.
+            if (_ray.origin[i] < boxMin[i] || _ray.origin[i] > boxMax[i])
+                return false;
+        }
+        else
+        {
+            // Compute intersection t value of ray with near and far plane of slab
+            float invD = 1.f / _ray.direction[i];
+            float t0 = (boxMin[i] - _ray.origin[i]) * invD;
+            float t1 = (boxMax[i] - _ray.origin[i]) * invD;
+            if (invD < 0.f)
+                std::swap(t0, t1);
+            tMin = fmax(tMin, t0);
+            tMax = fmin(tMax, t1);
+            if (tMax <= tMin)
+                return false;
+        }
+    }
+	return true;
 }
 
 Color Ray::LaunchRay(const Ray& _ray, const Scene& _sceneToRender, int _maxRecursionDepth)

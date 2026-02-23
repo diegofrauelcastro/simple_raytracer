@@ -171,11 +171,13 @@
     <ClInclude Include="code\include\DebugLog\debug.h" />
     <ClInclude Include="code\include\Debug\debug.h" />
     <ClInclude Include="code\include\entity.h" />
+    <ClInclude Include="code\include\material.h" />
     <ClInclude Include="code\include\mesh.h" />
     <ClInclude Include="code\include\mesh_renderer_component.h" />
     <ClInclude Include="code\include\ray.h" />
     <ClInclude Include="code\include\scene.h" />
     <ClInclude Include="code\include\script_component.h" />
+    <ClInclude Include="code\include\threadpool.h" />
     <ClInclude Include="code\include\transform.h" />
     <ClInclude Include="code\include\window_application.h" />
     <ClInclude Include="libs\Math\include\matrix2.h" />
@@ -199,6 +201,7 @@
     <ClCompile Include="code\src\ray.cpp" />
     <ClCompile Include="code\src\scene.cpp" />
     <ClCompile Include="code\src\script_component.cpp" />
+    <ClCompile Include="code\src\threadpool.cpp" />
     <ClCompile Include="code\src\transform.cpp" />
     <ClCompile Include="code\src\window_application.cpp" />
     <ClCompile Include="libs\Math\src\matrix2.cpp" />

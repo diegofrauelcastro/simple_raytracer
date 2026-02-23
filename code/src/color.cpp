@@ -24,6 +24,11 @@ Color::Color(float _f, float _a)
 {
 }
 
+Color::Color(const Maths::Vector3& _v, float _a)
+	: r(_v.x), g(_v.y), b(_v.z), a(_a)
+{
+}
+
 Color::Color(const Color& _copy)
 	: r(_copy.r), g(_copy.g), b(_copy.b), a(_copy.a)
 {

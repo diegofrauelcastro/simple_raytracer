@@ -18,6 +18,29 @@ Vertex::Vertex(const Vertex& _copy)
 {
 }
 
+void Mesh::UpdateBoundingBox()
+{
+	if (vertices.empty())
+	{
+		boundingBox.min = Vector3::zero;
+		boundingBox.max = Vector3::zero;
+		return;
+	}
+	Vector3 min = vertices[0].position;
+	Vector3 max = vertices[0].position;
+	for (const Vertex& v : vertices)
+	{
+		min.x = fmin(min.x, v.position.x);
+		min.y = fmin(min.y, v.position.y);
+		min.z = fmin(min.z, v.position.z);
+		max.x = fmax(max.x, v.position.x);
+		max.y = fmax(max.y, v.position.y);
+		max.z = fmax(max.z, v.position.z);
+	}
+	boundingBox.min = min;
+	boundingBox.max = max;
+}
+
 void Mesh::CreateTriangleMesh()
 {
 	// Hardcoded vertices and indices.
@@ -27,6 +50,8 @@ void Mesh::CreateTriangleMesh()
 	Vertex v3({ 0.f, 0.5f, 0.f }, Vector3::forward, Color(0.f, 0.f, 1.f));
 	vertices = { v1, v2, v3 };
 	vertexCount = 3; indexCount = 3;
+	boundingBox.min = Vector3(-0.5f, -0.5f, -0.01f);
+	boundingBox.max = Vector3(0.5f, 0.5f, 0.01f);
 }
 
 // Author: Merwann ASSEMAT
@@ -154,6 +179,7 @@ Mesh::Mesh(std::string _name, std::string _filePath)
 {
 	// Try to load the mesh file (.obj) at the specified path.
 	bool bHasLoaded = Load(_filePath);
+	UpdateBoundingBox();
 	if (!bHasLoaded)
 		LOG_APP("Couldn't load mesh \"%s\"", name.c_str())
 	else
@@ -174,6 +200,7 @@ Mesh::Mesh(const Mesh& _copy)
 	, indexCount(_copy.indexCount)
 	, vertices(_copy.vertices)
 	, indices(_copy.indices)
+	, boundingBox(_copy.boundingBox)
 {
 }
 

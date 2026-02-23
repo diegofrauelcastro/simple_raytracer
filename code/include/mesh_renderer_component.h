@@ -2,10 +2,10 @@
 
 #include "component.h"
 #include "matrix4.h"
+#include "material.h"
 
 // Forward declarations.
 class Mesh;
-class Material;
 
 class MeshRendererComponent : public IComponent
 {

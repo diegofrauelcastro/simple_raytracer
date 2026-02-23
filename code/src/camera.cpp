@@ -12,6 +12,7 @@ Camera::Camera(const Vector3& _position, const Vector3& _direction, float _focal
 	: position(_position)
 	, direction(_direction)
 	, focalLength(_focalLength)
+	, threadPool(std::thread::hardware_concurrency())
 {
 }
 
@@ -19,6 +20,7 @@ Camera::Camera(const Camera& _copy)
 	: position(_copy.position)
 	, direction(_copy.direction)
 	, focalLength(_copy.focalLength)
+	, threadPool(std::thread::hardware_concurrency())
 
 	, firstPixelLocation(_copy.firstPixelLocation)
 	, uPixelDelta(_copy.uPixelDelta)
@@ -65,31 +67,41 @@ void Camera::RenderFrame(WindowApplication& _dstWindow, const Scene& _scene)
 
 	// Render to window screen.
 	_dstWindow.Clear(0, 0, 0);
-	for (uint32_t y = 0; y < h; ++y)
+
+	// Multithread tiles.
+	isRenderingInProgress = true;
+	uint32_t tileSize = 32;
+	uint32_t tilesX = (w + tileSize - 1) / tileSize;
+	uint16_t tilesY = (h + tileSize - 1) / tileSize;
+	uint32_t tileCount = tilesX * tilesY;
+
+	std::vector<bool> tileCompletionStatus(tileCount, false);
+	int currentTileIndex = 0;
+	for (uint32_t y = 0; y < h; y += tileSize)
 	{
-		for (uint32_t x = 0; x < w; ++x)
+		for (uint32_t x = 0; x < w; x += tileSize)
 		{
-			// TODO Optimization : Multithread this by enqueing chunks to a thread pool.
-
-			// Get current pixel's position and direction.
-			Vector3 pixelCenter = firstPixelLocation + (float)x * uPixelDelta + (float)y * vPixelDelta;
-			Vector3 rayDirection = (pixelCenter - position).Normalize();
-
-			// Create a ray for this pixel.
-			Ray ray(position, rayDirection);
-
-			// Launch the ray and determine its color.
-			Color pixelColor = Ray::LaunchRay(ray, _scene, 1000);
-			_dstWindow.SetPixel(x, y, pixelColor.ToByteVector3());
-			pixelCounter++;
+			threadPool.Submit([this, &tileCompletionStatus, currentTileIndex, x, y, tileSize, &w, &h, &_dstWindow, &_scene]()
+			{
+				tileCompletionStatus[currentTileIndex] = RenderTile(_dstWindow, _scene, x, y, tileSize, tileSize);
+			});
+			currentTileIndex++;
 		}
-		PrintProgress(pixelCounter / totalPixels);
+	}
+	// Wait for all tiles to be rendered while showing progress in the console.
+	while (isRenderingInProgress)
+	{
+		int completedTiles = 0;
+		for (bool status : tileCompletionStatus)
+			if (status) completedTiles++;
+		PrintProgress((float)completedTiles / (float)tileCount);
+		if (completedTiles == tileCount)
+			isRenderingInProgress = false;
 	}
 	LOG_CLEAN("");
-
-	if (_dstWindow.GetDebugTelemetry())
-		LOG_APP("TELEMETRY: Stop launching rays.")
+	LOG_APP("TELEMETRY: Stop launching rays.")
 }
+
 
 void Camera::ComputeViewportData(WindowApplication& _dstWindow)
 {
@@ -112,5 +124,39 @@ void Camera::ComputeViewportData(WindowApplication& _dstWindow)
 
 	// Record world position of the upper left pixel (first one in the array).
 	firstPixelLocation = viewportUpperLeft + 0.5f * (uPixelDelta + vPixelDelta);
+}
+
+bool Camera::RenderTile(WindowApplication& _dstWindow, const Scene& _scene, uint32_t xStart, uint32_t yStart, uint32_t tileWidth, uint32_t tileHeight) const
+{
+	for (uint32_t y = yStart; y < yStart + tileHeight && y < _dstWindow.GetHeight(); ++y)
+	{
+		for (uint32_t x = xStart; x < xStart + tileWidth && x < _dstWindow.GetWidth(); ++x)
+		{
+			// Get current pixel's position and direction.
+			Vector3 pixelCenter = firstPixelLocation + (float)x * uPixelDelta + (float)y * vPixelDelta;
+			Vector3 rayDirection = (pixelCenter - position).Normalize();
+
+			// Multisampling the same pixel.
+			int sampleCount = 15;
+			Vector3 uncappedPixelColor = Vector3::zero;
+			for (int i = 0; i < sampleCount; i++)
+			{
+				// Calculate jittered ray for this pixel.
+				float uOffset = ((float)rand() / (float)RAND_MAX - 0.5f) * uPixelDelta.GetMagnitude();
+				float vOffset = ((float)rand() / (float)RAND_MAX - 0.5f) * vPixelDelta.GetMagnitude();
+				Vector3 jitteredPixelCenter = pixelCenter + uOffset * uPixelDelta.Normalize() + vOffset * vPixelDelta.Normalize();
+				Vector3 jitteredRayDirection = (jitteredPixelCenter - position).Normalize();
+
+				// Create a ray for this jittered pixel, launch and accumulate the color.
+				Ray ray(jitteredPixelCenter, jitteredRayDirection);
+				uncappedPixelColor += Ray::LaunchRay(ray, _scene, 5).ToFloatVector3();
+			}
+			// Average the accumulated color and write it to the window.
+			uncappedPixelColor /= (float)sampleCount;
+			_dstWindow.SetPixel(x, y, Color(uncappedPixelColor).ToByteVector3());
+		}
+	}
+
+	return true;
 }
 

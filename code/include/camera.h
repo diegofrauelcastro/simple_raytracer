@@ -1,6 +1,7 @@
 #pragma once
 
 #include "vector3.h"
+#include "threadpool.h"
 
 // Forward declarations
 class WindowApplication;
@@ -31,6 +32,7 @@ public:
 private:
 	/// CAMERA PROPERTIES ///
 
+	ThreadPool threadPool;
 	Maths::Vector3 firstPixelLocation;
 	Maths::Vector3 uPixelDelta;
 	Maths::Vector3 vPixelDelta;
@@ -38,9 +40,11 @@ private:
 	float verticalFOV = 60;
 	float viewportWidth = 0;
 	float viewportHeight = 0;
+	bool isRenderingInProgress = false;
 
 
 	/// CLASS HELPERS ///
 
 	void ComputeViewportData(WindowApplication& _dstWindow);
+	bool RenderTile(WindowApplication& _dstWindow, const Scene& _scene, uint32_t xStart, uint32_t yStart, uint32_t tileWidth, uint32_t tileHeight) const;
 };
