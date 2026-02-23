@@ -8,7 +8,12 @@
 #define SAMPLES_PER_PIXEL 10
 #define MAX_RECURSION_DEPTH 5
 #define ENABLE_MULTITHREADING true
-#define TILE_SIZE 8 // Only useful if multithreading is enabled.
+
+#ifdef DEBUG
+	#define TILE_SIZE 8
+#else
+	#define TILE_SIZE 32 // Only useful if multithreading is enabled.
+#endif
 
 int main(int argc, char* argv[])
 {

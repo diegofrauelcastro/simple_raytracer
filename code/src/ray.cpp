@@ -168,59 +168,39 @@ bool Ray::DoesRayIntersectWithAABB(const Ray& _ray, const AABB& _aabb)
 	return true;
 }
 
+// Möller and Trumbore, "Fast, Minimum Storage Ray-Triangle Intersection", Journal of Graphics Tools, vol. 2, 1997, p. 21–28
+bool Ray::DoesRayIntersectWithTriangle(const Ray& _ray, const Vector3& _triA, const Vector3& _triB, const Vector3& _triC, HitData* _storedHitData)
+{
+    if (!_storedHitData)
+		return false;
+
+    Vector3 E1 = _triB - _triA;
+    Vector3 E2 = _triC - _triA;
+    
+    Vector3 N = E1.CrossProduct(E2);
+    float det = -_ray.direction.DotProduct(N);
+    float invdet = 1.0f / det;
+    Vector3 AO = _ray.origin - _triA;
+    Vector3 DAO = AO.CrossProduct(_ray.direction);
+
+    float u = E2.DotProduct(DAO) * invdet;
+    float v = -E1.DotProduct(DAO) * invdet;
+    float t = AO.DotProduct(N) * invdet;
+    bool res = (det >= 0.00001f && t >= 0.0f && u >= 0.0f && v >= 0.0f && (u + v) <= 1.0f);
+    if (res)
+    {
+		Vector3 hitPoint = _ray.GetPointInRay(t);
+        _storedHitData->hitPoint = hitPoint;
+        _storedHitData->baryCoords = Vector3(u, v, 1.f - u - v);
+        _storedHitData->distanceFromRayOrigin = Vector3::Distance(_ray.origin, hitPoint);
+	}
+
+    return res;
+}
+
 Color Ray::LaunchRay(const Ray& _ray, const Scene& _sceneToRender, int _maxRecursionDepth)
 {
 	return LaunchRayRecursively(_ray, _sceneToRender, 0, _maxRecursionDepth);
-}
-
-bool Ray::IsPointInTriangle(const Vector3& _point, const Vector3& _triA, const Vector3& _triB, const Vector3& _triC, Vector3* _storedBaryCoords)
-{
-    // Vectors from A
-    Vector3 v0 = _triC - _triA;
-    Vector3 v1 = _triB - _triA;
-    Vector3 v2 = _point - _triA;
-
-    // Compute dot products
-    float dot00 = v0.DotProduct(v0);
-    float dot01 = v0.DotProduct(v1);
-    float dot02 = v0.DotProduct(v2);
-    float dot11 = v1.DotProduct(v1);
-    float dot12 = v1.DotProduct(v2);
-
-    // Compute barycentric coordinates
-    float denom = dot00 * dot11 - dot01 * dot01;
-    if (fabs(denom) < 0.0001f)
-        return false;
-    float invDenom = 1.f / denom;
-    float u = (dot11 * dot02 - dot01 * dot12) * invDenom;
-    float v = (dot00 * dot12 - dot01 * dot02) * invDenom;
-    // Store the barycentric coordinates in the reference passed.
-    *_storedBaryCoords = Vector3(u, v, 1.0f - u - v);
-
-    // Check if point is in triangle
-    return (u >= 0.f) && (v >= 0.f) && (u + v <= 1.f);
-}
-
-bool Ray::DoesRayIntersectWithInfiniteTriPlane(const Ray& _ray, const Vector3& _triA, const Vector3& _triB, const Vector3& _triC, Vector3* _storedIntersectionPoint)
-{
-    Vector3 u = _triB - _triA;
-    Vector3 v = _triC - _triA;
-    Vector3 n0 = u.CrossProduct(v).Normalize();
-    float denom = n0.DotProduct(_ray.direction);
-    *_storedIntersectionPoint = Vector3::zero;
-
-    // If the line is strictly parallel to the plane, it never intersects.
-    if (fabs(denom) < 0.00001f)
-        return false;
-
-    // Calculate the necessary t to intersect. If t is negative, the plane intersects but in the opposite direction of the ray, which we don't care.
-    float t = n0.DotProduct(_triA - _ray.origin) / denom;
-    if (t < 0.00001f)
-        return false;
-
-    // Otherwise, we store the intersection point.
-    *_storedIntersectionPoint = _ray.origin + t * _ray.direction;
-    return true;
 }
 
 bool Ray::DoesRayIntersectWithMeshInLocalSpace(const Ray& _ray, const Mesh& _mesh, HitData* _h)
@@ -231,6 +211,7 @@ bool Ray::DoesRayIntersectWithMeshInLocalSpace(const Ray& _ray, const Mesh& _mes
 	// TODO Optimization : Here test if the ray intersects the bounding box of the mesh before testing all the triangles.
 
 	bool hasFoundValidHit = false;
+	float minDistanceHit = INFINITY;
 
     // Iterate through all the triangles of the current entity's mesh.
     for (uint32_t j = 0; j < _mesh.GetIndexCount(); j += 3)
@@ -254,17 +235,13 @@ bool Ray::DoesRayIntersectWithMeshInLocalSpace(const Ray& _ray, const Mesh& _mes
         Vector3 positions[3] = { _h->triangle[0]->position, _h->triangle[1]->position, _h->triangle[2]->position };
 
         // Check collision with the infinite plane formed by this triangle.
-        if (DoesRayIntersectWithInfiniteTriPlane(_ray, positions[0], positions[1], positions[2], &_h->hitPoint))
+        if (DoesRayIntersectWithTriangle(_ray, positions[0], positions[1], positions[2], _h))
         {
-            float newDistance = (_ray.origin - _h->hitPoint).Norm();
-			if (newDistance > _h->distanceFromRayOrigin)
+            if (_h->distanceFromRayOrigin > minDistanceHit)
                 continue;
-            // If the point is closer than our last recorded point, check if it is inside the desired triangle.
-            if (IsPointInTriangle(_h->hitPoint, positions[0], positions[1], positions[2], &_h->baryCoords))
-            {
-				hasFoundValidHit = true;
-                _h->distanceFromRayOrigin = newDistance;
-            }
+
+            minDistanceHit = _h->distanceFromRayOrigin;
+            hasFoundValidHit = true;
         }
     }
 	return hasFoundValidHit;

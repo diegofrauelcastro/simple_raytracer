@@ -38,12 +38,11 @@ private:
 	/// CLASS HELPERS ///
 
 	static bool DoesRayIntersectWithScene(const Ray& _ray, const std::vector<MeshRendererComponent*>& _entities, HitData* _storedHitData);
-	static bool IsPointInTriangle(const Maths::Vector3& _point, const Maths::Vector3& _triA, const Maths::Vector3& _triB, const Maths::Vector3& _triC, Maths::Vector3* _storedBaryCoords);
-	static bool DoesRayIntersectWithInfiniteTriPlane(const Ray& _ray, const Maths::Vector3& _triA, const Maths::Vector3& _triB, const Maths::Vector3& _triC, Maths::Vector3* _storedIntersectionPoint);
 	static bool DoesRayIntersectWithMeshInLocalSpace(const Ray& _ray, const Mesh& _mesh, HitData* _storedHitData);
 	static Vertex CreateInterpolatedVertexFromHitData(const HitData& _hitData);
 	static Color LaunchRayRecursively(const Ray& _ray, const Scene& _sceneToRender, int _currentRecursionDepth, int _maxRecursionDepth);
 	static bool DoesRayIntersectWithAABB(const Ray& _ray, const AABB& _aabb);
+	static bool DoesRayIntersectWithTriangle(const Ray& _ray, const Maths::Vector3& _triA, const Maths::Vector3& _triB, const Maths::Vector3& _triC, HitData* _storedHitData);
 
 public:
 	/// CONSTRUCTOR & DESTRUCTOR ///
