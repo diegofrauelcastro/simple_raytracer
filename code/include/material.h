@@ -42,7 +42,7 @@ public:
 	virtual TransparentMaterial* AsTransparent() { return nullptr; }
 
 protected:
-	MaterialType type;
+	MaterialType type = MaterialType::DIFFUSE;
 };
 
 class MetallicMaterial : public Material

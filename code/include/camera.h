@@ -16,6 +16,10 @@ public:
 	Maths::Vector3 position;
 	Maths::Vector3 direction;
 	float focalLength = 1.0f;
+	int samplesPerPixel = 10;
+	int maxRecursionDepth = 5;
+	uint32_t tileSize = 32;
+	bool enableMultithreading = true;
 
 
 	/// CONSTRUCTOR & DESTRUCTOR ///

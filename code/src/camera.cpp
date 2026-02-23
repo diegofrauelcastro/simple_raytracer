@@ -69,8 +69,7 @@ void Camera::RenderFrame(WindowApplication& _dstWindow, const Scene& _scene)
 	_dstWindow.Clear(0, 0, 0);
 
 	// Multithread tiles.
-	isRenderingInProgress = true;
-	uint32_t tileSize = 32;
+	isRenderingInProgress = enableMultithreading;
 	uint32_t tilesX = (w + tileSize - 1) / tileSize;
 	uint16_t tilesY = (h + tileSize - 1) / tileSize;
 	uint32_t tileCount = tilesX * tilesY;
@@ -81,10 +80,18 @@ void Camera::RenderFrame(WindowApplication& _dstWindow, const Scene& _scene)
 	{
 		for (uint32_t x = 0; x < w; x += tileSize)
 		{
-			threadPool.Submit([this, &tileCompletionStatus, currentTileIndex, x, y, tileSize, &w, &h, &_dstWindow, &_scene]()
+			if (enableMultithreading)
+			{
+				threadPool.Submit([this, &tileCompletionStatus, currentTileIndex, x, y, &w, &h, &_dstWindow, &_scene]()
+					{
+						tileCompletionStatus[currentTileIndex] = RenderTile(_dstWindow, _scene, x, y, tileSize, tileSize);
+					});
+			}
+			else
 			{
 				tileCompletionStatus[currentTileIndex] = RenderTile(_dstWindow, _scene, x, y, tileSize, tileSize);
-			});
+				PrintProgress((float)currentTileIndex / (float)tileCount);
+			}
 			currentTileIndex++;
 		}
 	}
@@ -137,9 +144,8 @@ bool Camera::RenderTile(WindowApplication& _dstWindow, const Scene& _scene, uint
 			Vector3 rayDirection = (pixelCenter - position).Normalize();
 
 			// Multisampling the same pixel.
-			int sampleCount = 15;
 			Vector3 uncappedPixelColor = Vector3::zero;
-			for (int i = 0; i < sampleCount; i++)
+			for (int i = 0; i < samplesPerPixel; i++)
 			{
 				// Calculate jittered ray for this pixel.
 				float uOffset = ((float)rand() / (float)RAND_MAX - 0.5f) * uPixelDelta.GetMagnitude();
@@ -149,10 +155,10 @@ bool Camera::RenderTile(WindowApplication& _dstWindow, const Scene& _scene, uint
 
 				// Create a ray for this jittered pixel, launch and accumulate the color.
 				Ray ray(jitteredPixelCenter, jitteredRayDirection);
-				uncappedPixelColor += Ray::LaunchRay(ray, _scene, 5).ToFloatVector3();
+				uncappedPixelColor += Ray::LaunchRay(ray, _scene, maxRecursionDepth).ToFloatVector3();
 			}
 			// Average the accumulated color and write it to the window.
-			uncappedPixelColor /= (float)sampleCount;
+			uncappedPixelColor /= (float)samplesPerPixel;
 			_dstWindow.SetPixel(x, y, Color(uncappedPixelColor).ToByteVector3());
 		}
 	}

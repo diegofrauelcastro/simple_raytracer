@@ -5,6 +5,10 @@
 
 #define WIDTH 620
 #define HEIGHT 512
+#define SAMPLES_PER_PIXEL 10
+#define MAX_RECURSION_DEPTH 5
+#define ENABLE_MULTITHREADING true
+#define TILE_SIZE 8 // Only useful if multithreading is enabled.
 
 int main(int argc, char* argv[])
 {
@@ -88,6 +92,10 @@ int main(int argc, char* argv[])
 
     // Create a camera and render an image with it.
     Camera mainCam;
+	mainCam.samplesPerPixel = SAMPLES_PER_PIXEL;
+	mainCam.maxRecursionDepth = MAX_RECURSION_DEPTH;
+	mainCam.enableMultithreading = ENABLE_MULTITHREADING;
+	mainCam.tileSize = TILE_SIZE;
     mainCam.RenderFrame(windowApp, scene);
 
     // Present the image and wait for user to close the window.
