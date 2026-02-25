@@ -5,15 +5,15 @@
 
 #define WIDTH 720
 #define HEIGHT 512
-#define SAMPLES_PER_PIXEL 100
-#define MAX_RECURSION_DEPTH 10
+#define SAMPLES_PER_PIXEL 1000
+#define MAX_RECURSION_DEPTH 20
 #define ENABLE_MULTITHREADING true
 
 // Only useful if multithreading is enabled.
 #ifdef DEBUG
 	#define TILE_SIZE 8
 #else
-	#define TILE_SIZE 16
+	#define TILE_SIZE 32
 #endif
 
 int main(int argc, char* argv[])
@@ -61,37 +61,43 @@ int main(int argc, char* argv[])
 	m1->SetMaterial(groundMat);
 	ground.GetTransform().SetPosition(Maths::Vector3(0.f, -1.f, -5.f));
 
+	Entity& ceiling = scene.GetRoot().AddChild("Ceiling");
+	m1 = ceiling.AddComponent<MeshRendererComponent>("MeshRenderer");
+	m1->SetMesh(groundMesh);
+	m1->SetMaterial(groundMat);
+	ceiling.GetTransform().SetPosition(Maths::Vector3(0.f, 3.5f, -5.f));
+
 	// Back wall
-	//Entity& backWall = scene.GetRoot().AddChild("BackWall");
-	//m1 = backWall.AddComponent<MeshRendererComponent>("MeshRenderer");
-	//m1->SetMesh(groundMesh);
-	//m1->SetMaterial(defaultMat);
-	//backWall.GetTransform().SetPosition(Maths::Vector3(0.f, 0.f, -10.f));
-	//backWall.GetTransform().SetRotation(90.f, 0.f, 0.f);
+	Entity& backWall = scene.GetRoot().AddChild("BackWall");
+	m1 = backWall.AddComponent<MeshRendererComponent>("MeshRenderer");
+	m1->SetMesh(groundMesh);
+	m1->SetMaterial(defaultMat);
+	backWall.GetTransform().SetPosition(Maths::Vector3(0.f, 0.f, -10.f));
+	backWall.GetTransform().SetRotation(90.f, 0.f, 0.f);
 
 	// Icosphere
 	Mesh icosphereMesh("IcosphereMesh", "Assets/Meshes/icosphere.obj");
 
-	//Entity& icosphere = scene.GetRoot().AddChild("Icosphere");
-	//MeshRendererComponent* m = icosphere.AddComponent<MeshRendererComponent>("MeshRenderer");
-	//m->SetMesh(icosphereMesh);
-	//m->SetMaterial(defaultMat);
-	//icosphere.GetTransform().SetPosition(Maths::Vector3(1.f, 0.2f, -2.0f));
-	//icosphere.GetTransform().SetScale(Maths::Vector3(0.5f, 0.5f, 0.5f));
+	Entity& icosphere = scene.GetRoot().AddChild("Icosphere");
+	MeshRendererComponent* m = icosphere.AddComponent<MeshRendererComponent>("MeshRenderer");
+	m->SetMesh(icosphereMesh);
+	m->SetMaterial(defaultMat);
+	icosphere.GetTransform().SetPosition(Maths::Vector3(-1.f, 0.f, -3.0f));
+	icosphere.GetTransform().SetScale(Maths::Vector3(0.5f, 0.5f, 0.5f));
 
 	Entity& icosphere2 = scene.GetRoot().AddChild("Icosphere2");
-	MeshRendererComponent* m = icosphere2.AddComponent<MeshRendererComponent>("MeshRenderer");
+	m = icosphere2.AddComponent<MeshRendererComponent>("MeshRenderer");
 	m->SetMesh(icosphereMesh);
-	m->SetMaterial(centerSphereMat);
-	icosphere2.GetTransform().SetPosition(Maths::Vector3(-0.f, -0.2f, -3.f));
+	m->SetMaterial(metallicMat);
+	icosphere2.GetTransform().SetPosition(Maths::Vector3(0.f, 0.f, -3.5f));
 	icosphere2.GetTransform().SetScale(Maths::Vector3(0.5f, 0.5f, 0.5f));
 
-	//Entity& icosphere3 = scene.GetRoot().AddChild("Icosphere3");
-	//m = icosphere3.AddComponent<MeshRendererComponent>("MeshRenderer");
-	//m->SetMesh(icosphereMesh);
-	//m->SetMaterial(defaultMat);
-	//icosphere3.GetTransform().SetPosition(Maths::Vector3(1.f, 0.2f, -2.0f));
-	//icosphere3.GetTransform().SetScale(Maths::Vector3(0.5f, 0.5f, 0.5f));
+	Entity& icosphere3 = scene.GetRoot().AddChild("Icosphere3");
+	m = icosphere3.AddComponent<MeshRendererComponent>("MeshRenderer");
+	m->SetMesh(icosphereMesh);
+	m->SetMaterial(centerSphereMat);
+	icosphere3.GetTransform().SetPosition(Maths::Vector3(1.f, 0.f, -3.0f));
+	icosphere3.GetTransform().SetScale(Maths::Vector3(0.5f, 0.5f, 0.5f));
 
 
 	///////////

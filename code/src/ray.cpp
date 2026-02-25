@@ -95,10 +95,39 @@ Color Ray::LaunchRayRecursively(const Ray& _ray, const Scene& _sceneToRender, in
         Color albedo = hit.interpolatedVertex.color * matColor;
 
         // Lighting.
-        Color lighting = ComputeLightingAtPoint(hit.interpolatedVertex, _sceneToRender);
+        //Color lighting = ComputeLightingAtPoint(hit.interpolatedVertex, _sceneToRender);
+
+        // Next ray values.
+        Color recursiveColor = Color::black;
+        Vector3 newOrigin = hit.interpolatedVertex.position + 0.001f * hit.interpolatedVertex.normal; // Slight offset to avoid self-intersection.
+        switch (hit.material->GetType())
+        {
+            // For diffuse materials, we will simply bounce the ray in a random direction on the hemisphere of the hit point normal.
+            case MaterialType::DIFFUSE:
+            {
+                // Get the color from the ray bounced from the hit point.
+                Vector3 newDirection = Vector3::GenerateRandomOnHemisphere(hit.interpolatedVertex.normal);
+                float cosTheta = fmax(newDirection.DotProduct(hit.interpolatedVertex.normal), 0.0f);
+                recursiveColor = LaunchRayRecursively(Ray(newOrigin, newDirection), _sceneToRender, _currentRecursionDepth + 1, _maxRecursionDepth) * cosTheta * 2.f;
+                break;
+            }
+            // For metallic materials, we will reflect the ray on the hit point normal.
+            case MaterialType::METALLIC:
+            {
+                const Vector3 incident = _ray.direction.Normalize();
+                Vector3 reflectedDir = incident - 2.f * incident.DotProduct(hit.interpolatedVertex.normal) * hit.interpolatedVertex.normal;
+
+                // Avoid reflecting below surface
+                if (reflectedDir.DotProduct(hit.interpolatedVertex.normal) <= 0)
+                    recursiveColor = Color::black;
+                recursiveColor = LaunchRayRecursively(Ray(newOrigin, reflectedDir), _sceneToRender, _currentRecursionDepth + 1, _maxRecursionDepth);
+                break;
+            }
+        }
        
 
-        Color finalColor = lighting * albedo;
+        //Color finalColor = recursiveColor * lighting * albedo;
+        Color finalColor = recursiveColor * albedo;
         return finalColor;
     }
     // If no collision at all, show the sky color (gradient).
