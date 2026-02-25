@@ -5,7 +5,7 @@
 
 #define WIDTH 720
 #define HEIGHT 512
-#define SAMPLES_PER_PIXEL 1000
+#define SAMPLES_PER_PIXEL 250
 #define MAX_RECURSION_DEPTH 20
 #define ENABLE_MULTITHREADING true
 
@@ -72,7 +72,7 @@ int main(int argc, char* argv[])
 	m1 = backWall.AddComponent<MeshRendererComponent>("MeshRenderer");
 	m1->SetMesh(groundMesh);
 	m1->SetMaterial(defaultMat);
-	backWall.GetTransform().SetPosition(Maths::Vector3(0.f, 0.f, -10.f));
+	backWall.GetTransform().SetPosition(Maths::Vector3(0.f, 0.f, -7.f));
 	backWall.GetTransform().SetRotation(90.f, 0.f, 0.f);
 
 	// Icosphere
@@ -82,22 +82,22 @@ int main(int argc, char* argv[])
 	MeshRendererComponent* m = icosphere.AddComponent<MeshRendererComponent>("MeshRenderer");
 	m->SetMesh(icosphereMesh);
 	m->SetMaterial(defaultMat);
-	icosphere.GetTransform().SetPosition(Maths::Vector3(-1.f, 0.f, -3.0f));
-	icosphere.GetTransform().SetScale(Maths::Vector3(0.5f, 0.5f, 0.5f));
+	icosphere.GetTransform().SetPosition(Maths::Vector3(-2.f, -0.2f, -4.f));
+	//icosphere.GetTransform().SetScale(Maths::Vector3(0.5f, 0.5f, 0.5f));
 
 	Entity& icosphere2 = scene.GetRoot().AddChild("Icosphere2");
 	m = icosphere2.AddComponent<MeshRendererComponent>("MeshRenderer");
 	m->SetMesh(icosphereMesh);
 	m->SetMaterial(metallicMat);
-	icosphere2.GetTransform().SetPosition(Maths::Vector3(0.f, 0.f, -3.5f));
-	icosphere2.GetTransform().SetScale(Maths::Vector3(0.5f, 0.5f, 0.5f));
+	icosphere2.GetTransform().SetPosition(Maths::Vector3(0.f, -0.2f, -4.5f));
+	//icosphere2.GetTransform().SetScale(Maths::Vector3(0.5f, 0.5f, 0.5f));
 
 	Entity& icosphere3 = scene.GetRoot().AddChild("Icosphere3");
 	m = icosphere3.AddComponent<MeshRendererComponent>("MeshRenderer");
 	m->SetMesh(icosphereMesh);
 	m->SetMaterial(centerSphereMat);
-	icosphere3.GetTransform().SetPosition(Maths::Vector3(1.f, 0.f, -3.0f));
-	icosphere3.GetTransform().SetScale(Maths::Vector3(0.5f, 0.5f, 0.5f));
+	icosphere3.GetTransform().SetPosition(Maths::Vector3(2.f, -0.2f, -4.f));
+	//icosphere3.GetTransform().SetScale(Maths::Vector3(0.5f, 0.5f, 0.5f));
 
 
 	///////////

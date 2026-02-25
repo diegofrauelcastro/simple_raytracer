@@ -99,15 +99,20 @@ Color Ray::LaunchRayRecursively(const Ray& _ray, const Scene& _sceneToRender, in
 
         // Next ray values.
         Color recursiveColor = Color::black;
-        Vector3 newOrigin = hit.interpolatedVertex.position + 0.001f * hit.interpolatedVertex.normal; // Slight offset to avoid self-intersection.
+
+        Vector3 n = hit.interpolatedVertex.normal;
+        //if (_ray.direction.DotProduct(n) > 0.0f)
+        //    n = -n;
+
+        Vector3 newOrigin = hit.interpolatedVertex.position + 0.001f * n; // Slight offset to avoid self-intersection.
         switch (hit.material->GetType())
         {
             // For diffuse materials, we will simply bounce the ray in a random direction on the hemisphere of the hit point normal.
             case MaterialType::DIFFUSE:
             {
                 // Get the color from the ray bounced from the hit point.
-                Vector3 newDirection = Vector3::GenerateRandomOnHemisphere(hit.interpolatedVertex.normal);
-                float cosTheta = fmax(newDirection.DotProduct(hit.interpolatedVertex.normal), 0.0f);
+                Vector3 newDirection = Vector3::GenerateRandomOnHemisphere(n);
+                float cosTheta = fmax(newDirection.DotProduct(n), 0.0f);
                 recursiveColor = LaunchRayRecursively(Ray(newOrigin, newDirection), _sceneToRender, _currentRecursionDepth + 1, _maxRecursionDepth) * cosTheta * 2.f;
                 break;
             }
@@ -115,11 +120,8 @@ Color Ray::LaunchRayRecursively(const Ray& _ray, const Scene& _sceneToRender, in
             case MaterialType::METALLIC:
             {
                 const Vector3 incident = _ray.direction.Normalize();
-                Vector3 reflectedDir = incident - 2.f * incident.DotProduct(hit.interpolatedVertex.normal) * hit.interpolatedVertex.normal;
-
-                // Avoid reflecting below surface
-                if (reflectedDir.DotProduct(hit.interpolatedVertex.normal) <= 0)
-                    recursiveColor = Color::black;
+                Vector3 reflectedDir = incident - 2.f * incident.DotProduct(n) * n;
+                newOrigin = hit.interpolatedVertex.position + 0.001f * reflectedDir;
                 recursiveColor = LaunchRayRecursively(Ray(newOrigin, reflectedDir), _sceneToRender, _currentRecursionDepth + 1, _maxRecursionDepth);
                 break;
             }
