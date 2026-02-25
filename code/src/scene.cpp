@@ -1,5 +1,4 @@
 #include "scene.h"
-#include "mesh_renderer_component.h"
 #include "script_component.h"
 #include "matrix4.h"
 
@@ -64,8 +63,10 @@ void Scene::UpdateTransformsFromRoot()
 
 void Scene::UpdateFrameCachedComponents()
 {
-	// Clear the cache and fill all necessary caches for the current frame.
+	// Clear the caches and fill all necessary caches for the current frame.
 	meshRenderersFrameCache.clear();
+	lightComponentsFrameCache.clear();
+
 	std::vector<Entity*> entitiesToVisit;
 	entitiesToVisit.push_back(&root);
 	while (!entitiesToVisit.empty())
@@ -77,6 +78,10 @@ void Scene::UpdateFrameCachedComponents()
 		// Mesh Renderer component cache.
 		if (MeshRendererComponent* meshRenderer = currentEntity->GetComponent<MeshRendererComponent>())
 			meshRenderersFrameCache.push_back(meshRenderer);
+
+		// Light component cache.
+		if (LightComponent* lightComp = currentEntity->GetComponent<LightComponent>())
+			lightComponentsFrameCache.push_back(lightComp);
 
 		// ... More caches will probably be added here in the future.
 

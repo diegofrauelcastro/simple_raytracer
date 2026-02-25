@@ -3,8 +3,11 @@
 #include "entity.h"
 #include "mesh.h"
 #include "mesh_renderer_component.h"
+#include "light_component.h"
 #include <vector>
 #include <string>
+
+// Forward declarations
 
 class Scene
 {
@@ -19,6 +22,7 @@ private:
 	// CACHE
 
 	std::vector<MeshRendererComponent*> meshRenderersFrameCache;
+	std::vector<LightComponent*> lightComponentsFrameCache;
 
 
 	// HELPERS
@@ -55,4 +59,5 @@ public:
 	EntityState GetState() const { return state; }
 	std::string GetName() const { return name; }
 	const std::vector<MeshRendererComponent*>& GetMeshRenderersFrameCache() const { return meshRenderersFrameCache; }
+	const std::vector<LightComponent*>& GetLightComponentsFrameCache() const { return lightComponentsFrameCache; }
 };

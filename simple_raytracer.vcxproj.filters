@@ -96,6 +96,9 @@
     <ClInclude Include="code\include\threadpool.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
+    <ClInclude Include="code\include\light_component.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="code\src\window_application.cpp">
@@ -162,6 +165,9 @@
       <Filter>Fichiers sources</Filter>
     </ClCompile>
     <ClCompile Include="code\src\threadpool.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="code\src\light_component.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
   </ItemGroup>

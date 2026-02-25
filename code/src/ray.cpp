@@ -1,7 +1,7 @@
 #include "ray.h"
 #include "scene.h"
 #include "mesh_renderer_component.h"
-#include "mesh.h"
+#include "light_component.h"
 #include "material.h"
 
 #include <DebugLog/debug.h>
@@ -26,18 +26,19 @@ Vector3 Ray::GetPointInRay(float _t) const
     return origin + (_t * direction);
 }
 
-bool Ray::DoesRayIntersectWithScene(const Ray& _ray, const std::vector<MeshRendererComponent*>& _entities, HitData* _hitData)
+bool Ray::DoesRayIntersectWithScene(const Ray& _ray, const std::vector<MeshRendererComponent*>& _meshRenderers, HitData* _hitData)
 {
-    HitData h;
     float minDistanceHit = INFINITY;
     bool hasFoundValidHit = false;
 
     // Iterate through all entities with a mesh renderer component.
-    for (size_t i = 0; i < _entities.size(); i++)
+    for (size_t i = 0; i < _meshRenderers.size(); i++)
     {
+        HitData hit;
+
 		// Get the mesh and transform the ray into the entity's local space.
-        const Mesh& currMesh = _entities[i]->GetMesh();
-		Matrix4 w2oMat = _entities[i]->GetTransform().GetWorldToObjectMatrix();
+        const Mesh& currMesh = _meshRenderers[i]->GetMesh();
+		Matrix4 w2oMat = _meshRenderers[i]->GetTransform().GetWorldToObjectMatrix();
 		Ray rayInEntitySpace = Ray(
             w2oMat * Vector4(_ray.origin, 1.f),
             (w2oMat * Vector4(_ray.direction, 0.f)).Normalize()
@@ -48,27 +49,28 @@ bool Ray::DoesRayIntersectWithScene(const Ray& _ray, const std::vector<MeshRende
 			continue;
 
 		// Check if the ray intersects with the current entity's mesh (in local space). If it does, the hit data is stored in the reference passed as a parameter, also in local space.
-		if (DoesRayIntersectWithMeshInLocalSpace(rayInEntitySpace, currMesh, &h))
+		if (DoesRayIntersectWithMeshInLocalSpace(rayInEntitySpace, currMesh, &hit))
 		{
 			// If the point is closer than our last recorded point, store it in the reference passed.
-			if (h.distanceFromRayOrigin < minDistanceHit)
+			if (hit.distanceFromRayOrigin < minDistanceHit)
 			{
                 // Record the new hit point.
-				minDistanceHit = h.distanceFromRayOrigin;
-				*_hitData = h;
-				_hitData->material = &_entities[i]->GetMaterial();
-				hasFoundValidHit = true;
+                hasFoundValidHit = true;
+                minDistanceHit = hit.distanceFromRayOrigin;
+                if (_hitData)
+                {
+                    // Retrieve the latest hit data.
+                    *_hitData = hit;
+                    _hitData->material = &_meshRenderers[i]->GetMaterial();
 
-				// Transform the hit point back to world space.
-				_hitData->hitPoint = _entities[i]->GetTransform().GetObjectToWorldMatrix() * Vector4(_hitData->hitPoint, 1.f);
+                    // Get the interpolated local space vertex that was hit (position, normal, color).
+                    _hitData->interpolatedVertex = CreateInterpolatedVertexFromHitData(*_hitData);
+                    _hitData->interpolatedVertex.position = _meshRenderers[i]->GetTransform().GetObjectToWorldMatrix() * Vector4(_hitData->interpolatedVertex.position, 1.f);
+                    _hitData->interpolatedVertex.normal = _meshRenderers[i]->GetTransform().GetNormalMatrix() * Vector4(_hitData->interpolatedVertex.normal, 0.f);
 
-				// Transform the triangle vertices back to world space.
-                for (int j = 0; j < 3; j++)
-                    _hitData->triangle[j] = new Vertex(
-                        _entities[i]->GetTransform().GetObjectToWorldMatrix() * Vector4(_hitData->triangle[j]->position, 1.f),
-                        _entities[i]->GetTransform().GetNormalMatrix() * Vector4(_hitData->triangle[j]->normal, 0.f),
-						_hitData->triangle[j]->color
-                    );
+                    // Transform the hit point back to world space.
+                    _hitData->hitPoint = _hitData->interpolatedVertex.position;
+                }
 			}
 		}
     }
@@ -86,44 +88,17 @@ Color Ray::LaunchRayRecursively(const Ray& _ray, const Scene& _sceneToRender, in
     if (DoesRayIntersectWithScene(_ray, _sceneToRender.GetMeshRenderersFrameCache(), &hit))
     {
         if (hit.material == nullptr)
-			return Color::black;
+			return Color::red+Color::blue;
 
         // Calculate color using the hit point data.
-        Vertex newVertex = CreateInterpolatedVertexFromHitData(hit);
 		Color matColor = hit.material->albedo;
-        Color albedo = newVertex.color * matColor;
+        Color albedo = hit.interpolatedVertex.color * matColor;
 
-        // Next ray values.
-		Color recursiveColor = Color::black;
-        newVertex.normal.Normalize();
-        Vector3 newOrigin = newVertex.position + 0.001f * newVertex.normal; // Slight offset to avoid self-intersection.
-        switch (hit.material->GetType())
-		{
-            // For diffuse materials, we will simply bounce the ray in a random direction on the hemisphere of the hit point normal.
-            case MaterialType::DIFFUSE:
-            {
-                // Get the color from the ray bounced from the hit point.
-                Vector3 newDirection = Vector3::GenerateRandomOnHemisphere(newVertex.normal);
-                float cosTheta = fmax(newDirection.DotProduct(newVertex.normal), 0.0f);
-                recursiveColor = LaunchRayRecursively(Ray(newOrigin, newDirection), _sceneToRender, _currentRecursionDepth + 1, _maxRecursionDepth) * cosTheta * 2.f;
-                break;
-            }
-            // For metallic materials, we will reflect the ray on the hit point normal.
-            case MaterialType::METALLIC:
-            {
-                const Vector3 incident = _ray.direction.Normalize();
-                Vector3 reflectedDir = incident - 2.f * incident.DotProduct(newVertex.normal) * newVertex.normal;
+        // Lighting.
+        Color lighting = ComputeLightingAtPoint(hit.interpolatedVertex, _sceneToRender);
+       
 
-                // Avoid reflecting below surface
-                if (reflectedDir.DotProduct(newVertex.normal) <= 0)
-                    recursiveColor = Color::black;
-                recursiveColor = LaunchRayRecursively(Ray(newOrigin, reflectedDir), _sceneToRender, _currentRecursionDepth + 1, _maxRecursionDepth);
-                break;
-            }
-        }
-
-        // Final color.
-		Color finalColor = albedo * recursiveColor;
+        Color finalColor = lighting * albedo;
         return finalColor;
     }
     // If no collision at all, show the sky color (gradient).
@@ -171,9 +146,6 @@ bool Ray::DoesRayIntersectWithAABB(const Ray& _ray, const AABB& _aabb)
 // Möller and Trumbore, "Fast, Minimum Storage Ray-Triangle Intersection", Journal of Graphics Tools, vol. 2, 1997, p. 21–28
 bool Ray::DoesRayIntersectWithTriangle(const Ray& _ray, const Vector3& _triA, const Vector3& _triB, const Vector3& _triC, HitData* _storedHitData)
 {
-    if (!_storedHitData)
-		return false;
-
     Vector3 E1 = _triB - _triA;
     Vector3 E2 = _triC - _triA;
     
@@ -190,12 +162,47 @@ bool Ray::DoesRayIntersectWithTriangle(const Ray& _ray, const Vector3& _triA, co
     if (res)
     {
 		Vector3 hitPoint = _ray.GetPointInRay(t);
-        _storedHitData->hitPoint = hitPoint;
-        _storedHitData->baryCoords = Vector3(u, v, 1.f - u - v);
-        _storedHitData->distanceFromRayOrigin = Vector3::Distance(_ray.origin, hitPoint);
+        // Store hit data.
+        if (_storedHitData)
+        {
+            _storedHitData->hitPoint = hitPoint;
+            _storedHitData->baryCoords = Vector3(u, v, 1.f - u - v);
+            _storedHitData->distanceFromRayOrigin = Vector3::Distance(_ray.origin, hitPoint);
+        }
 	}
 
     return res;
+}
+
+Color Ray::ComputeLightingAtPoint(const Vertex& _hitVertex, const Scene& _sceneToRender)
+{
+	Color finalColor = Color::black;
+    Vector3 shadowRayOrigin = _hitVertex.normal + 0.001f;
+    Vector3 normal = _hitVertex.normal.Normalize();
+	std::vector<LightComponent*> lights = _sceneToRender.GetLightComponentsFrameCache();
+    for (size_t i = 0; i < lights.size(); i++)
+    {
+        // Compute a shadow ray for each light.
+        Vector3 lightDir = (lights[i]->GetTransform().GetPosition() - _hitVertex.position);
+		float lightDistance = lightDir.GetMagnitude();
+		lightDir.Normalize();
+		Ray shadowRay(shadowRayOrigin, lightDir);
+
+        float NdotL = fmax(normal.DotProduct(lightDir), 0.0f);
+        if (NdotL <= 0.0f)
+            continue;
+
+        // If the shadow ray hits something before finding the light, this light doesn't contribute to the final color.
+		HitData shadowHit;
+		bool hasHitSomething = DoesRayIntersectWithScene(shadowRay, _sceneToRender.GetMeshRenderersFrameCache(), &shadowHit);
+		if (hasHitSomething && shadowHit.distanceFromRayOrigin < lightDistance)
+            continue;
+
+		// Otherwise, add the contribution of this light to the final color.
+		finalColor += lights[i]->GetColor() * NdotL * lights[i]->GetIntensity();
+	}
+
+	return finalColor;
 }
 
 Color Ray::LaunchRay(const Ray& _ray, const Scene& _sceneToRender, int _maxRecursionDepth)
@@ -205,17 +212,14 @@ Color Ray::LaunchRay(const Ray& _ray, const Scene& _sceneToRender, int _maxRecur
 
 bool Ray::DoesRayIntersectWithMeshInLocalSpace(const Ray& _ray, const Mesh& _mesh, HitData* _h)
 {
-    if (!_h)
-        return false;
-
-	// TODO Optimization : Here test if the ray intersects the bounding box of the mesh before testing all the triangles.
-
 	bool hasFoundValidHit = false;
 	float minDistanceHit = INFINITY;
 
     // Iterate through all the triangles of the current entity's mesh.
     for (uint32_t j = 0; j < _mesh.GetIndexCount(); j += 3)
     {
+        HitData cachedData;
+
         // Ensure we have a valid triangle.
         size_t vertexCount = _mesh.GetVertexCount();
         uint32_t i1 = _mesh.GetIndices()[j];
@@ -229,19 +233,21 @@ bool Ray::DoesRayIntersectWithMeshInLocalSpace(const Ray& _ray, const Mesh& _mes
         }
 
         // Get the 3 vertices of the triangle.
-        _h->triangle[0] = &_mesh.GetVertices()[i1];
-        _h->triangle[1] = &_mesh.GetVertices()[i2];
-        _h->triangle[2] = &_mesh.GetVertices()[i3];
-        Vector3 positions[3] = { _h->triangle[0]->position, _h->triangle[1]->position, _h->triangle[2]->position };
+        cachedData.triangle[0] = &_mesh.GetVertices()[i1];
+        cachedData.triangle[1] = &_mesh.GetVertices()[i2];
+        cachedData.triangle[2] = &_mesh.GetVertices()[i3];
+        Vector3 positions[3] = { cachedData.triangle[0]->position, cachedData.triangle[1]->position, cachedData.triangle[2]->position };
 
         // Check collision with the infinite plane formed by this triangle.
-        if (DoesRayIntersectWithTriangle(_ray, positions[0], positions[1], positions[2], _h))
+        if (DoesRayIntersectWithTriangle(_ray, positions[0], positions[1], positions[2], &cachedData))
         {
-            if (_h->distanceFromRayOrigin > minDistanceHit)
+            if (cachedData.distanceFromRayOrigin > minDistanceHit)
                 continue;
 
-            minDistanceHit = _h->distanceFromRayOrigin;
+            minDistanceHit = cachedData.distanceFromRayOrigin;
             hasFoundValidHit = true;
+            // Copy hit data.
+            if (_h) *_h = cachedData;
         }
     }
 	return hasFoundValidHit;
@@ -254,6 +260,10 @@ Vertex Ray::CreateInterpolatedVertexFromHitData(const HitData& _hitData)
 
     // We skip position, as we already know it from the hitPoint.
     // ... //
+    //newVertex.position = _hitData.hitPoint;
+	newVertex.position.x = _hitData.triangle[0]->position.x * bCoord.z + _hitData.triangle[1]->position.x * bCoord.x + _hitData.triangle[2]->position.x * bCoord.y;
+	newVertex.position.y = _hitData.triangle[0]->position.y * bCoord.z + _hitData.triangle[1]->position.y * bCoord.x + _hitData.triangle[2]->position.y * bCoord.y;
+	newVertex.position.z = _hitData.triangle[0]->position.z * bCoord.z + _hitData.triangle[1]->position.z * bCoord.x + _hitData.triangle[2]->position.z * bCoord.y;
     
     // Interpolate color and clamp it between 0.f and 1.f .
 	newVertex.color = Color::black;
@@ -274,6 +284,7 @@ Vertex Ray::CreateInterpolatedVertexFromHitData(const HitData& _hitData)
 
 HitData::HitData(const HitData& _copy)
     : hitPoint(_copy.hitPoint)
+    , interpolatedVertex(_copy.interpolatedVertex)
     , baryCoords(_copy.baryCoords)
 	, distanceFromRayOrigin(_copy.distanceFromRayOrigin)
 	, material(_copy.material)
@@ -289,6 +300,7 @@ HitData& HitData::operator=(const HitData& _copy)
     triangle[1] = _copy.triangle[1];
     triangle[2] = _copy.triangle[2];
     hitPoint = _copy.hitPoint;
+    interpolatedVertex = _copy.interpolatedVertex;
     baryCoords = _copy.baryCoords;
 	distanceFromRayOrigin = _copy.distanceFromRayOrigin;
 	material = _copy.material;

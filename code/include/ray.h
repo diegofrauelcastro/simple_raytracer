@@ -2,21 +2,21 @@
 
 #include "vector3.h"
 #include "color.h"
+#include "mesh.h"
 #include <vector>
 
 // Forward declarations.
 class Scene;
 class MeshRendererComponent;
-class Mesh;
 class Material;
-struct Vertex;
 struct AABB;
 
 struct HitData
 {
 	Maths::Vector3 hitPoint;
 	Maths::Vector3 baryCoords;
-	const Vertex* triangle[3] = {nullptr, nullptr, nullptr};
+	Vertex interpolatedVertex;
+	const Vertex* triangle[3] = {nullptr, nullptr, nullptr}; // Original vertices of the hit triangle, in local space.
 	float distanceFromRayOrigin = INFINITY;
 	Material* material = nullptr;
 
@@ -37,12 +37,14 @@ private:
 	
 	/// CLASS HELPERS ///
 
-	static bool DoesRayIntersectWithScene(const Ray& _ray, const std::vector<MeshRendererComponent*>& _entities, HitData* _storedHitData);
+	static bool DoesRayIntersectWithScene(const Ray& _ray, const std::vector<MeshRendererComponent*>& _meshRenderers, HitData* _storedHitData);
 	static bool DoesRayIntersectWithMeshInLocalSpace(const Ray& _ray, const Mesh& _mesh, HitData* _storedHitData);
 	static Vertex CreateInterpolatedVertexFromHitData(const HitData& _hitData);
 	static Color LaunchRayRecursively(const Ray& _ray, const Scene& _sceneToRender, int _currentRecursionDepth, int _maxRecursionDepth);
 	static bool DoesRayIntersectWithAABB(const Ray& _ray, const AABB& _aabb);
 	static bool DoesRayIntersectWithTriangle(const Ray& _ray, const Maths::Vector3& _triA, const Maths::Vector3& _triB, const Maths::Vector3& _triC, HitData* _storedHitData);
+	static Color ComputeLightingAtPoint(const Vertex& _hitVertex, const Scene& _sceneToRender);
+
 
 public:
 	/// CONSTRUCTOR & DESTRUCTOR ///

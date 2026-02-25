@@ -180,6 +180,7 @@
     <ClInclude Include="code\include\threadpool.h" />
     <ClInclude Include="code\include\transform.h" />
     <ClInclude Include="code\include\window_application.h" />
+    <ClInclude Include="code\include\light_component.h" />
     <ClInclude Include="libs\Math\include\matrix2.h" />
     <ClInclude Include="libs\Math\include\matrix3.h" />
     <ClInclude Include="libs\Math\include\matrix4.h" />
@@ -195,6 +196,7 @@
     <ClCompile Include="code\src\component.cpp" />
     <ClCompile Include="code\src\debug.cpp" />
     <ClCompile Include="code\src\entity.cpp" />
+    <ClCompile Include="code\src\light_component.cpp" />
     <ClCompile Include="code\src\main.cpp" />
     <ClCompile Include="code\src\mesh.cpp" />
     <ClCompile Include="code\src\mesh_renderer_component.cpp" />

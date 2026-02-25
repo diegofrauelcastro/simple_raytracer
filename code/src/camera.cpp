@@ -73,13 +73,14 @@ void Camera::RenderFrame(WindowApplication& _dstWindow, const Scene& _scene)
 	uint32_t tilesX = (w + tileSize - 1) / tileSize;
 	uint16_t tilesY = (h + tileSize - 1) / tileSize;
 	uint32_t tileCount = tilesX * tilesY;
-
 	std::vector<bool> tileCompletionStatus(tileCount, false);
 	int currentTileIndex = 0;
+	// Iterate through tiles.
 	for (uint32_t y = 0; y < h; y += tileSize)
 	{
 		for (uint32_t x = 0; x < w; x += tileSize)
 		{
+			// Multithreading tiles.
 			if (enableMultithreading)
 			{
 				threadPool.Submit([this, &tileCompletionStatus, currentTileIndex, x, y, &w, &h, &_dstWindow, &_scene]()
@@ -87,6 +88,7 @@ void Camera::RenderFrame(WindowApplication& _dstWindow, const Scene& _scene)
 						tileCompletionStatus[currentTileIndex] = RenderTile(_dstWindow, _scene, x, y, tileSize, tileSize);
 					});
 			}
+			// Single thread tiles.
 			else
 			{
 				tileCompletionStatus[currentTileIndex] = RenderTile(_dstWindow, _scene, x, y, tileSize, tileSize);
@@ -95,7 +97,7 @@ void Camera::RenderFrame(WindowApplication& _dstWindow, const Scene& _scene)
 			currentTileIndex++;
 		}
 	}
-	// Wait for all tiles to be rendered while showing progress in the console.
+	// Wait for all tiles to be rendered while showing progress in the console (ONLY DURING MULTITHREADING).
 	while (isRenderingInProgress)
 	{
 		int completedTiles = 0;
