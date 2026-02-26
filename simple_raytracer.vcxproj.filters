@@ -1,0 +1,174 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Fichiers sources">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Fichiers de ressources">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête\Math">
+      <UniqueIdentifier>{709de432-eaa8-48e3-b9fb-e5e36179ec6a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers sources\Math">
+      <UniqueIdentifier>{c091ba88-995f-4aa8-a67d-12b63a0735c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête\Debug">
+      <UniqueIdentifier>{60532b14-b690-425d-8db4-e8f0f4cf4155}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers sources\Debug">
+      <UniqueIdentifier>{32044544-87b4-4955-a688-530c7123ecc8}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="code\include\window_application.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\Math\include\matrix2.h">
+      <Filter>Fichiers d%27en-tête\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\Math\include\matrix3.h">
+      <Filter>Fichiers d%27en-tête\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\Math\include\matrix4.h">
+      <Filter>Fichiers d%27en-tête\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\Math\include\matrixmxn.h">
+      <Filter>Fichiers d%27en-tête\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\Math\include\vector2.h">
+      <Filter>Fichiers d%27en-tête\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\Math\include\vector3.h">
+      <Filter>Fichiers d%27en-tête\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\Math\include\vector4.h">
+      <Filter>Fichiers d%27en-tête\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\Math\include\vectornd.h">
+      <Filter>Fichiers d%27en-tête\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="code\include\Debug\debug.h">
+      <Filter>Fichiers d%27en-tête\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="code\include\ray.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="code\include\DebugLog\debug.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="code\include\camera.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="code\include\mesh.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="code\include\scene.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="code\include\transform.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="code\include\entity.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="code\include\component.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="code\include\mesh_renderer_component.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="code\include\script_component.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="code\include\color.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="code\include\material.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="code\include\threadpool.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="code\include\light_component.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="code\src\window_application.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="code\src\main.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\Math\src\matrix2.cpp">
+      <Filter>Fichiers sources\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\Math\src\matrix3.cpp">
+      <Filter>Fichiers sources\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\Math\src\matrix4.cpp">
+      <Filter>Fichiers sources\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\Math\src\matrixmxn.cpp">
+      <Filter>Fichiers sources\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\Math\src\vector2.cpp">
+      <Filter>Fichiers sources\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\Math\src\vector3.cpp">
+      <Filter>Fichiers sources\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\Math\src\vector4.cpp">
+      <Filter>Fichiers sources\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\Math\src\vectornd.cpp">
+      <Filter>Fichiers sources\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="code\src\debug.cpp">
+      <Filter>Fichiers sources\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="code\src\ray.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="code\src\camera.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="code\src\mesh.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="code\src\scene.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="code\src\transform.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="code\src\entity.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="code\src\component.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="code\src\mesh_renderer_component.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="code\src\script_component.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="code\src\color.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="code\src\threadpool.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="code\src\light_component.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

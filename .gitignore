@@ -10,6 +10,7 @@
 *.userosscache
 *.sln.docstates
 *.env
+log.txt
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
@@ -86,7 +87,6 @@ StyleCopReport.xml
 *_h.h
 *.ilk
 *.meta
-*.obj
 *.idb
 *.iobj
 *.pch
@@ -416,3 +416,6 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# Intel VTune profiler
+Intel*/
